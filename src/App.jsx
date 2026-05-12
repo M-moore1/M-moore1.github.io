@@ -33,20 +33,10 @@ const stagger = {
   },
 };
 
+
+{/* PROJECT INFORMATION */}
 const projects = [
-  {
-    title: "Security-Relevant Hallucinations in Frontier LVLMs",
-    type: "AI Security Research",
-    icon: BrainCircuit,
-    summary:
-      "Evaluated how frontier large vision-language models handle visual information from a security perspective, including prompt injection and hallucination classification.",
-    highlights: [
-      "Designed tailored prompt-injection tests",
-      "Classified unexpected outputs into security-relevant categories",
-      "Focused on model obedience, hallucination risk, and visual attack surfaces",
-    ],
-    tags: ["LVLMs", "Prompt Injection", "AI Security", "Evaluation"],
-  },
+
   {
     title: "Secure Embedded Wireless Vehicle Architecture",
     type: "Embedded Security",
@@ -59,6 +49,19 @@ const projects = [
       "Used AES-GCM for real-time encryption",
     ],
     tags: ["BLE", "ESP32", "wolfSSL", "AES-GCM", "C"],
+  },
+  {
+    title: "Security-Relevant Hallucinations in Frontier LVLMs",
+    type: "AI Security Research",
+    icon: BrainCircuit,
+    summary:
+      "Evaluated how frontier large vision-language models handle visual information from a security perspective, including prompt injection and hallucination classification.",
+    highlights: [
+      "Designed tailored prompt-injection tests",
+      "Classified unexpected outputs into security-relevant categories",
+      "Focused on model obedience, hallucination risk, and visual attack surfaces",
+    ],
+    tags: ["LVLMs", "Prompt Injection", "AI Security", "Evaluation"],
   },
   {
     title: "Adversarial UAV Acoustic Detection CNN",
