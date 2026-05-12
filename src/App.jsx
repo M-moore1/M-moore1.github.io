@@ -537,8 +537,7 @@ export default function App() {
           eyebrow="Toolkit"
           title="A technical stack built around secure systems."
         >
-          Add more tools here as your projects grow. This section is
-          intentionally modular.
+          THIS IS A PLACEHOLDER
         </SectionHeading>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
