@@ -588,6 +588,8 @@ export default function App() {
               </p>
             </div>
 
+
+            {/* HUSKY QUANTITATIVE GROUP INFORMATION */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
                 <h3 className="font-semibold text-white">
@@ -600,6 +602,8 @@ export default function App() {
                 </p>
               </div>
 
+
+              {/* RESIDENT ASSISTANT INFORMATION */}
               <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
                 <h3 className="font-semibold text-white">
                   Resident Assistant
