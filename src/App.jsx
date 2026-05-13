@@ -34,7 +34,7 @@ const stagger = {
   },
 };
 
-
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 {/* PROJECT INFORMATION */}
 const projects = [
 
@@ -110,7 +110,7 @@ const projects = [
 
   {
     title: "Wordle Best Guesser",
-    type: "Algorithmic Design and Information Gain",
+    type: "Algorithms",
     icon: Gamepad,
     summary:
       "Designed an algorithm that suggests a best next guess for the popular New York Times Wordle.",
@@ -121,10 +121,26 @@ const projects = [
     ],
     tags: ["Python", "Virtual Environment", "Algorithms", "Information Gain"],
   },
+
+  {
+    title: "Rubiks Cube Solver",
+    type: "Computer Vision",
+    icon: Gamepad,
+    summary:
+      "Using OpenCV, create a program to take snapshots of a scrambled rubiks cube and solve the cube in the least number of moves.",
+    highlights: [
+      "Validated accuracy on 100,000 simulations of games with RAISE as first guess; resulted in 99.5% game success, average of 3.602 guesses per game",
+      "Suggests next best guess based on current word feedback",
+      "Returns words with highest information gain to ensure lowest guesses per game",
+    ],
+    tags: ["Python", "Virtual Environment", "Algorithms", "Information Gain"],
+  },
 ];
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
 
 
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 {/* EXPERIENCES INFORMATION */}
 const experiences = [
   {
@@ -169,8 +185,11 @@ const experiences = [
     ],
   },
 ];
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
 
+
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 {/* SKILLS INFORMATION */}
 const skillGroups = [
   {
@@ -212,7 +231,11 @@ const skillGroups = [
     items: ["English", "Spanish", "French"],
   },
 ];
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
+
+
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 function Pill({ children }) {
   return (
     <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-xs text-emerald-100">
