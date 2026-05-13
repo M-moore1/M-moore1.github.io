@@ -281,7 +281,7 @@ export default function App() {
               Mason Moore
             </p>
             <p className="text-xs text-zinc-400">
-              Cybersecurity • AI • Systems
+              Cybersecurity • AI/ML • Embedded Systems
             </p>
           </div>
         </a>
@@ -312,14 +312,14 @@ export default function App() {
             className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm text-emerald-100"
           >
             <span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.9)]" />
-            UConn Computer Science & Engineering • Spanish • M.S. Computing
+            Current Graduate Student in Computing @ UConn
           </motion.div>
 
           <motion.h1
             variants={fadeUp}
             className="max-w-4xl text-5xl font-semibold leading-tight tracking-[-0.04em] text-white md:text-7xl"
           >
-            Building secure systems where embedded hardware, AI, and cyber
+            Building secure systems where embedded hardware, AI/ML, and cyber
             defense meet.
           </motion.h1>
 
@@ -413,6 +413,9 @@ export default function App() {
                     <p className="mt-1 text-sm leading-6 text-zinc-300">
                       M.S. Computing, expected May 2027
                     </p>
+                    <p className="mt-1 text-sm leading-6 text-zinc-300">
+                      B.A. Spanish, expected May 2027
+                    </p>
                     <p className="text-sm leading-6 text-zinc-300">
                       B.S.E. Computer Science & Engineering
                     </p>
@@ -440,9 +443,7 @@ export default function App() {
 
               <div className="rounded-3xl border border-emerald-300/20 bg-emerald-300/10 p-5">
                 <p className="text-sm leading-7 text-emerald-50">
-                  Currently focused on embedded security, AI security
-                  evaluation, systems programming, and practical cybersecurity
-                  automation.
+                  Winner of the Excellence in Spanish Engineering Award, North Shining Star, Most Dependable RA, Sarah Levitan Fellowship
                 </p>
               </div>
             </div>
@@ -458,8 +459,7 @@ export default function App() {
           eyebrow="Selected work"
           title="Projects with clear security, systems, and research impact."
         >
-          Each card is designed to feel distinct, so recruiters can quickly
-          understand the technical area, impact, and tools behind the work.
+          I have completed many projects in the domain of engineering, both hardware and software. I have experience with a variety of subjects. I tend to like projects that have real word affects or things that I can directly use. I don't just want these to fluff up a resumé but rather to learn and built something meaninful.
         </SectionHeading>
 
         <motion.div
@@ -528,10 +528,10 @@ export default function App() {
       >
         <SectionHeading
           eyebrow="Experience"
-          title="Cybersecurity, research, and teaching experience."
+          title="Cybersecurity, Research, and Teaching Experience."
         >
-          A focused timeline showing where the portfolio skills have been
-          applied in professional and academic environments.
+          A focused timeline showing where my portfolio skills have been
+          applied in both professional and academic environments.
         </SectionHeading>
 
         <div className="relative space-y-5 before:absolute before:left-4 before:top-4 before:h-[calc(100%-2rem)] before:w-px before:bg-emerald-300/20 md:before:left-1/2">
@@ -587,7 +587,7 @@ export default function App() {
           eyebrow="Toolkit"
           title="A technical stack built around secure systems."
         >
-          THIS IS A PLACEHOLDER
+          I have other skills in addition to just my ability to build projects. I really enjoy learning and bettering myself.
         </SectionHeading>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -663,6 +663,20 @@ export default function App() {
                   residents across multiple academic years.
                 </p>
               </div>
+
+
+              {/* TEACHING ASSISTANT INFORMATION */}
+              <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
+                <h3 className="font-semibold text-white">
+                  Teaching Assistant
+                </h3>
+
+                <p className="mt-2 text-sm leading-6 text-zinc-300">
+                  Led labs for over 100 students focused on a variety of hardware and software security practices and offensive attacks. Graded student labs and provided feedback to assist learning.
+                </p>
+              </div>
+
+
             </div>
           </div>
         </div>
