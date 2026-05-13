@@ -104,6 +104,9 @@ const projects = [
   },
 ];
 
+
+
+{/* EXPERIENCES INFORMATION */}
 const experiences = [
   {
     org: "RTX Pratt & Whitney",
@@ -148,6 +151,8 @@ const experiences = [
   },
 ];
 
+
+{/* SKILLS INFORMATION */}
 const skillGroups = [
   {
     title: "Languages",
@@ -366,8 +371,7 @@ export default function App() {
                       M.S. Computing, expected May 2027
                     </p>
                     <p className="text-sm leading-6 text-zinc-300">
-                      B.S.E. Computer Science & Engineering + B.A. Spanish, GPA
-                      3.8/4.0
+                      B.S.E. Computer Science & Engineering
                     </p>
                   </div>
                 </div>
