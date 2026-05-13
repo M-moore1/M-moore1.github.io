@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
+  Box,
   Shield,
   Cpu,
   BrainCircuit,
@@ -125,7 +126,7 @@ const projects = [
   {
     title: "Rubiks Cube Solver",
     type: "Computer Vision",
-    icon: Gamepad,
+    icon: Box,
     summary:
       "Using OpenCV, create a program to take snapshots of a scrambled rubiks cube and solve the cube in the least number of moves.",
     highlights: [
@@ -691,12 +692,7 @@ export default function App() {
               <Mail className="h-4 w-4" /> Email
             </a>
 
-            <a
-              href="tel:2034565967"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-zinc-200 transition hover:border-emerald-300/40 hover:text-emerald-300"
-            >
-              <Phone className="h-4 w-4" /> Phone
-            </a>
+
 
             <a
               href="https://github.com/M-moore1"
