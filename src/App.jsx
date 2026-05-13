@@ -443,7 +443,8 @@ export default function App() {
 
               <div className="rounded-3xl border border-emerald-300/20 bg-emerald-300/10 p-5">
                 <p className="text-sm leading-7 text-emerald-50">
-                  Winner of the Excellence in Spanish Engineering Award, North Shining Star, Most Dependable RA, Sarah Levitan Fellowship
+                  Winner of the Excellence in Spanish Engineering Award, North Shining Star, 
+                  Most Dependable RA, Sarah Levitan Fellowship
                 </p>
               </div>
             </div>
