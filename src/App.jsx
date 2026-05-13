@@ -7,6 +7,7 @@ import {
   Radio,
   Lock,
   GraduationCap,
+  Gamepad,
   BriefcaseBusiness,
   Mail,
   Phone,
@@ -42,7 +43,7 @@ const projects = [
     type: "Embedded Security",
     icon: Shield,
     summary:
-      "Built a secure BLE communication layer between an embedded Linux board and ESP32 microcontroller using authenticated pairing, encrypted transport, and TLS.",
+      "Built a secure BLE communication layer between an embedded Linux board (Xilinx ZCU102) and ESP32 microcontroller using authenticated pairing, encrypted transport, and TLS.",
     highlights: [
       "Implemented authenticated BLE pairing and encrypted GATT transport",
       "Deployed wolfSSL TLS 1.2 over BLE connection with SPIFFS certificate storage",
@@ -105,6 +106,20 @@ const projects = [
       "Built LED signal-strength feedback",
     ],
     tags: ["Circuits", "Signals", "Hardware", "Audio"],
+  },
+
+  {
+    title: "Wordle Best Guesser",
+    type: "Algorithmic Design and Information Gain",
+    icon: Gamepad,
+    summary:
+      "Designed an algorithm that suggests a best next guess for the popular New York Times Wordle.",
+    highlights: [
+      "Validated accuracy on 100,000 simulations of games with RAISE as first guess; resulted in 99.5% game success, average of 3.602 guesses per game",
+      "Suggests next best guess based on current word feedback",
+      "Returns words with highest information gain to ensure lowest guesses per game",
+    ],
+    tags: ["Python", "Virtual Environment", "Algorithms", "Information Gain"],
   },
 ];
 
