@@ -642,12 +642,13 @@ export default function App() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
                 <h3 className="font-semibold text-white">
-                  Husky Quantitative Group
+                  Vice President of Operations
                 </h3>
 
                 <p className="mt-2 text-sm leading-6 text-zinc-300">
-                  Vice President of Operations. Built a recruiting pipeline for
-                  80+ applicants and supported interview selection.
+                  Built a recruiting pipeline for 80+ applicants and supported interview 
+                  selection for the Husky Quantitative Group, the first ever student run 
+                  Quant fund at the University of Connecticut.
                 </p>
               </div>
 
