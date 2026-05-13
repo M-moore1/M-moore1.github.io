@@ -45,11 +45,12 @@ const projects = [
       "Built a secure BLE communication layer between an embedded Linux board and ESP32 microcontroller using authenticated pairing, encrypted transport, and TLS.",
     highlights: [
       "Implemented authenticated BLE pairing and encrypted GATT transport",
-      "Deployed wolfSSL TLS 1.2 with SPIFFS certificate storage",
-      "Used AES-GCM for real-time encryption",
+      "Deployed wolfSSL TLS 1.2 over BLE connection with SPIFFS certificate storage",
+      "Used AES-GCM for real-time encryption of movement packets",
     ],
-    tags: ["BLE", "ESP32", "wolfSSL", "AES-GCM", "C"],
+    tags: ["BLE", "ESP32", "wolfSSL", "AES-GCM-256", "C"],
   },
+
   {
     title: "Security-Relevant Hallucinations in Frontier LVLMs",
     type: "AI Security Research",
@@ -63,8 +64,9 @@ const projects = [
     ],
     tags: ["LVLMs", "Prompt Injection", "AI Security", "Evaluation"],
   },
+
   {
-    title: "Adversarial UAV Acoustic Detection CNN",
+    title: "Acoustic Detection of Adversarial UAVs",
     type: "Machine Learning",
     icon: Cpu,
     summary:
@@ -74,8 +76,9 @@ const projects = [
       "Achieved 98.6% true negative rate",
       "Projected under $1M implementation versus a $40M system",
     ],
-    tags: ["TensorFlow", "CNN", "Signal Processing", "UAV Detection"],
+    tags: ["TensorFlow", "CNN", "Signal Processing", "Acoustics"],
   },
+
   {
     title: "Secure Password Manager & Generator",
     type: "Cryptography Tool",
@@ -87,8 +90,9 @@ const projects = [
       "Used secure storage to preserve credential integrity",
       "Encrypted sensitive data with AES",
     ],
-    tags: ["Python", "Cryptography", "AES", "Security Tools"],
+    tags: ["C++", "Cryptography", "AES", "Secure Coding Practices"],
   },
+
   {
     title: "Laser Audio Communication System",
     type: "Hardware + Signals",
