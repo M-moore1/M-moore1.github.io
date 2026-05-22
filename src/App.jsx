@@ -1,5 +1,5 @@
-import React from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Box,
   Shield,
@@ -11,7 +11,6 @@ import {
   Gamepad,
   BriefcaseBusiness,
   Mail,
-  Phone,
   MapPin,
   ArrowUpRight,
   Sparkles,
@@ -19,29 +18,30 @@ import {
   Languages,
   Award,
   Users,
+  ChevronDown,
 } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
+/* ─── animation variants ─────────────────────────────────────── */
+const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } };
+const stagger = { visible: { transition: { staggerChildren: 0.09 } } };
+
+/* ─── accent palette — one colour per project domain ─────────── */
+const ACCENTS = {
+  green:  { tag: "rgba(74,222,128,0.12)",  tagBorder: "rgba(74,222,128,0.25)",  tagText: "#4ade80",  cardBorder: "rgba(34,197,94,0.22)",  glow: "rgba(34,197,94,0.18)",  iconBg: "rgba(34,197,94,0.12)"  },
+  purple: { tag: "rgba(167,139,250,0.10)", tagBorder: "rgba(167,139,250,0.22)", tagText: "#a78bfa",  cardBorder: "rgba(167,139,250,0.22)", glow: "rgba(167,139,250,0.15)", iconBg: "rgba(167,139,250,0.12)" },
+  teal:   { tag: "rgba(45,212,191,0.10)",  tagBorder: "rgba(45,212,191,0.22)",  tagText: "#2dd4bf",  cardBorder: "rgba(20,184,166,0.22)",  glow: "rgba(20,184,166,0.15)",  iconBg: "rgba(20,184,166,0.12)"  },
+  amber:  { tag: "rgba(251,191,36,0.10)",  tagBorder: "rgba(251,191,36,0.22)",  tagText: "#fbbf24",  cardBorder: "rgba(251,191,36,0.22)",  glow: "rgba(251,191,36,0.13)",  iconBg: "rgba(251,191,36,0.10)"  },
+  lime:   { tag: "rgba(163,230,53,0.10)",  tagBorder: "rgba(163,230,53,0.22)",  tagText: "#a3e635",  cardBorder: "rgba(163,230,53,0.22)",  glow: "rgba(163,230,53,0.12)",  iconBg: "rgba(163,230,53,0.10)"  },
+  sky:    { tag: "rgba(56,189,248,0.10)",  tagBorder: "rgba(56,189,248,0.22)",  tagText: "#38bdf8",  cardBorder: "rgba(56,189,248,0.22)",  glow: "rgba(56,189,248,0.13)",  iconBg: "rgba(56,189,248,0.10)"  },
 };
 
-const stagger = {
-  visible: {
-    transition: {
-      staggerChildren: 0.09,
-    },
-  },
-};
-
-{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
-{/* PROJECT INFORMATION */}
+/* ─── project data ────────────────────────────────────────────── */
 const projects = [
-
   {
     title: "Secure Embedded Wireless Vehicle Architecture",
     type: "Embedded Security",
+    accent: "green",
     icon: Shield,
     summary:
       "Built a secure BLE communication layer between an embedded Linux board (Xilinx ZCU102) and ESP32 microcontroller using authenticated pairing, encrypted transport, and TLS.",
@@ -52,10 +52,10 @@ const projects = [
     ],
     tags: ["BLE", "ESP32", "wolfSSL", "AES-GCM-256", "C"],
   },
-
   {
     title: "Security-Relevant Hallucinations in Frontier LVLMs",
     type: "AI Security Research",
+    accent: "purple",
     icon: BrainCircuit,
     summary:
       "Evaluated how frontier large vision-language models handle visual information from a security perspective, including prompt injection and hallucination classification.",
@@ -66,10 +66,10 @@ const projects = [
     ],
     tags: ["LVLMs", "Prompt Injection", "AI Security", "Evaluation"],
   },
-
   {
     title: "Acoustic Detection of Adversarial UAVs",
     type: "Machine Learning",
+    accent: "teal",
     icon: Cpu,
     summary:
       "Engineered a TensorFlow CNN for acoustic UAV detection with strong drone-present and no-drone validation performance.",
@@ -80,10 +80,10 @@ const projects = [
     ],
     tags: ["TensorFlow", "CNN", "Signal Processing", "Acoustics"],
   },
-
   {
     title: "Secure Password Manager & Generator",
     type: "Cryptography Tool",
+    accent: "amber",
     icon: Lock,
     summary:
       "Created a password manager and generator focused on high-entropy credential creation and encrypted local storage.",
@@ -94,10 +94,10 @@ const projects = [
     ],
     tags: ["C++", "Cryptography", "AES", "Secure Coding Practices"],
   },
-
   {
     title: "Laser Audio Communication System",
     type: "Hardware + Signals",
+    accent: "lime",
     icon: Radio,
     summary:
       "Transmitted audio roughly 200 feet by modulating a laser with microphone and auxiliary input, then demodulating it with a solar-cell receiver.",
@@ -108,41 +108,37 @@ const projects = [
     ],
     tags: ["Circuits", "Signals", "Hardware", "Audio"],
   },
-
   {
     title: "Wordle Best Guesser",
     type: "Algorithms",
+    accent: "sky",
     icon: Gamepad,
     summary:
-      "Designed an algorithm that suggests a best next guess for the popular New York Times Wordle.",
+      "Designed an algorithm that suggests the best next guess for the New York Times Wordle.",
     highlights: [
-      "Validated accuracy on 100,000 simulations of games with RAISE as first guess; resulted in 99.5% game success, average of 3.602 guesses per game",
+      "Validated on 100,000 simulations — 99.5% win rate, avg 3.602 guesses using RAISE as first guess",
       "Suggests next best guess based on current word feedback",
-      "Returns words with highest information gain to ensure lowest guesses per game",
+      "Returns words with highest information gain to minimise guesses per game",
     ],
-    tags: ["Python", "Virtual Environment", "Algorithms", "Information Gain"],
+    tags: ["Python", "Algorithms", "Information Gain"],
   },
-
   {
-    title: "Rubiks Cube Solver",
+    title: "Rubik's Cube Solver",
     type: "Computer Vision",
+    accent: "teal",
     icon: Box,
     summary:
-      "Using OpenCV, create a program to take snapshots of a scrambled rubiks cube and solve the cube in the least number of moves.",
+      "Using OpenCV, creates a program to snapshot a scrambled Rubik's Cube and solve it in the fewest moves.",
     highlights: [
-      "Validated accuracy on 100,000 simulations of games with RAISE as first guess; resulted in 99.5% game success, average of 3.602 guesses per game",
-      "Suggests next best guess based on current word feedback",
-      "Returns words with highest information gain to ensure lowest guesses per game",
+      "Detects face colours from webcam snapshots using HSV segmentation",
+      "Maps detected state to an optimal solve algorithm",
+      "Returns the minimum-move solution sequence",
     ],
-    tags: ["Python", "Virtual Environment", "Algorithms", "Information Gain"],
+    tags: ["Python", "OpenCV", "Computer Vision", "Algorithms"],
   },
 ];
-{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-
-
-{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
-{/* EXPERIENCES INFORMATION */}
+/* ─── experience data ─────────────────────────────────────────── */
 const experiences = [
   {
     org: "RTX Pratt & Whitney",
@@ -158,7 +154,7 @@ const experiences = [
   {
     org: "Synchrony Financial",
     role: "Cybersecurity Intern",
-    period: "May 2024 – Aug 2025",
+    period: "May 2024 – Aug 2024",
     location: "Stamford, CT",
     bullets: [
       "Automated weekly reporting across thousands of active risk profiles, reducing missed-SLA risk by over 90%.",
@@ -173,7 +169,7 @@ const experiences = [
     location: "Storrs, CT",
     bullets: [
       "Engineered a TensorFlow CNN for adversarial UAV acoustic detection.",
-      "Reached 93.6% TPR and 98.6% TNR while modeling a substantially lower-cost alternative to a government system.",
+      "Reached 93.6% TPR and 98.6% TNR while modelling a substantially lower-cost alternative to a government system.",
     ],
   },
   {
@@ -186,265 +182,312 @@ const experiences = [
     ],
   },
 ];
-{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-
-
-{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
-{/* SKILLS INFORMATION */}
+/* ─── skill groups ────────────────────────────────────────────── */
 const skillGroups = [
-  {
-    title: "Languages",
-    icon: Code2,
-    items: ["Python", "C", "C++", "R"],
-  },
-  {
-    title: "Security + ML",
-    icon: Shield,
-    items: [
-      "PyCryptoDome",
-      "Scapy",
-      "OpenSSL",
-      "PyTorch",
-      "scikit-learn",
-      "Hugging Face",
-      "NumPy",
-    ],
-  },
-  {
-    title: "Tools",
-    icon: Cpu,
-    items: [
-      "Wireshark",
-      "Nmap",
-      "Docker",
-      "Git",
-      "VSCode",
-      "PlatformIO",
-      "ESP-IDF",
-      "UART",
-      "LTSpice",
-    ],
-  },
-  {
-    title: "Spoken Languages",
-    icon: Languages,
-    items: ["English", "Spanish", "French"],
-  },
+  { title: "Languages",      icon: Code2,      accent: "green",  items: ["Python", "C", "C++", "R"] },
+  { title: "Security + ML",  icon: Shield,     accent: "purple", items: ["PyCryptoDome", "Scapy", "OpenSSL", "PyTorch", "scikit-learn", "Hugging Face", "NumPy"] },
+  { title: "Tools",          icon: Cpu,        accent: "teal",   items: ["Wireshark", "Nmap", "Docker", "Git", "VSCode", "PlatformIO", "ESP-IDF", "UART", "LTSpice"] },
+  { title: "Spoken Languages", icon: Languages, accent: "lime",  items: ["English", "Spanish", "French"] },
 ];
-{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-
-
-{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */}
-function Pill({ children }) {
+/* ─── small reusable components ───────────────────────────────── */
+function Tag({ children, accent }) {
+  const a = ACCENTS[accent] ?? ACCENTS.green;
   return (
-    <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-xs text-emerald-100">
+    <span
+      style={{ background: a.tag, border: `1px solid ${a.tagBorder}`, color: a.tagText }}
+      className="rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-wide"
+    >
       {children}
     </span>
   );
 }
 
-function SectionHeading({ eyebrow, title, children }) {
+function SectionLabel({ children }) {
   return (
-    <div className="mb-8 max-w-3xl">
-      <p className="mb-2 text-sm font-medium uppercase tracking-[0.3em] text-emerald-300/80">
-        {eyebrow}
+    <div className="mb-6 flex items-center gap-3">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-400/60">
+        {children}
       </p>
-      <h2 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">
-        {title}
-      </h2>
-      {children && (
-        <p className="mt-4 text-base leading-7 text-zinc-300">{children}</p>
-      )}
+      <div className="h-px flex-1 bg-emerald-300/10" />
     </div>
   );
 }
 
+function SectionHeading({ eyebrow, title, children }) {
+  return (
+    <div className="mb-10 max-w-3xl">
+      <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-400/60">
+        {eyebrow}
+      </p>
+      <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">{title}</h2>
+      {children && <p className="mt-4 text-sm leading-7 text-zinc-400">{children}</p>}
+    </div>
+  );
+}
+
+/* ─── accordion project row ───────────────────────────────────── */
+function ProjectRow({ project, index }) {
+  const [open, setOpen] = useState(false);
+  const a = ACCENTS[project.accent] ?? ACCENTS.green;
+  const Icon = project.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.05 }}
+      style={{ borderColor: open ? a.cardBorder : "rgba(255,255,255,0.07)" }}
+      className="rounded-2xl border bg-white/[0.03] transition-colors duration-300"
+    >
+      {/* ── collapsed row ── */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center gap-4 px-5 py-4 text-left"
+      >
+        {/* icon */}
+        <div
+          style={{ background: a.iconBg, border: `1px solid ${a.tagBorder}` }}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+        >
+          <Icon className="h-4 w-4" style={{ color: a.tagText }} />
+        </div>
+
+        {/* title + type */}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-baseline gap-2">
+            <span className="text-sm font-semibold text-white truncate">{project.title}</span>
+            <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: a.tagText }}>
+              {project.type}
+            </span>
+          </div>
+          {/* tags — always visible */}
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {project.tags.map((tag) => (
+              <Tag key={tag} accent={project.accent}>{tag}</Tag>
+            ))}
+          </div>
+        </div>
+
+        {/* chevron */}
+        <motion.div
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="shrink-0"
+        >
+          <ChevronDown className="h-4 w-4 text-zinc-500" />
+        </motion.div>
+      </button>
+
+      {/* ── expanded content ── */}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="body"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div
+              style={{ borderTop: `1px solid ${a.cardBorder}` }}
+              className="px-5 pb-5 pt-4"
+            >
+              {/* subtle glow behind content */}
+              <div
+                style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${a.glow}, transparent)` }}
+                className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-40"
+              />
+
+              <p className="text-sm leading-7 text-zinc-300">{project.summary}</p>
+
+              <ul className="mt-4 space-y-2">
+                {project.highlights.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-zinc-400">
+                    <span
+                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
+                      style={{ background: a.tagText }}
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+/* ─── main app ────────────────────────────────────────────────── */
 export default function App() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#06110d] text-zinc-100">
-      <div className="pointer-events-none fixed inset-0 opacity-80">
-        <div className="absolute left-1/2 top-[-10rem] h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
-        <div className="absolute bottom-0 right-[-10rem] h-[28rem] w-[28rem] rounded-full bg-lime-300/10 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(110,231,183,0.11)_1px,transparent_0)] [background-size:34px_34px]" />
+    <main className="min-h-screen overflow-hidden bg-[#020c06] text-zinc-100">
+
+      {/* ── ambient background ── */}
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute inset-0"
+          style={{
+            background: `
+              radial-gradient(ellipse 60% 40% at 15% 20%, rgba(34,197,94,0.11) 0%, transparent 60%),
+              radial-gradient(ellipse 40% 50% at 80% 10%, rgba(20,184,166,0.09) 0%, transparent 55%),
+              radial-gradient(ellipse 35% 35% at 90% 75%, rgba(163,230,53,0.07) 0%, transparent 55%),
+              radial-gradient(ellipse 50% 30% at 30% 90%, rgba(52,211,153,0.06) 0%, transparent 50%)
+            `,
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage: "linear-gradient(rgba(34,197,94,1) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,1) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
       </div>
 
-      <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 md:px-10">
-        <a href="#top" className="group flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-300/30 bg-emerald-300/10 shadow-lg shadow-emerald-950">
-            <Sparkles className="h-5 w-5 text-emerald-300" />
+      {/* ── nav ── */}
+      <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
+        <a href="#top" className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-300/25 bg-emerald-300/10">
+            <Sparkles className="h-4 w-4 text-emerald-300" />
           </div>
-
           <div>
-            <p className="font-semibold tracking-tight text-white">
-              Mason Moore
-            </p>
-            <p className="text-xs text-zinc-400">
-              Cybersecurity • AI/ML • Embedded Systems
-            </p>
+            <p className="text-sm font-semibold tracking-tight text-white">Mason Moore</p>
+            <p className="text-[10px] text-zinc-500">Cybersecurity · AI/ML · Embedded</p>
           </div>
         </a>
 
-        <div className="hidden items-center gap-6 text-sm text-zinc-300 md:flex">
-          <a href="#projects" className="transition hover:text-emerald-300">
-            Projects
-          </a>
-          <a href="#experience" className="transition hover:text-emerald-300">
-            Experience
-          </a>
-          <a href="#skills" className="transition hover:text-emerald-300">
-            Skills
-          </a>
-          <a href="#contact" className="transition hover:text-emerald-300">
-            Contact
-          </a>
+        <div className="hidden items-center gap-1 text-sm md:flex">
+          {["projects", "experience", "skills", "contact"].map((s) => (
+            <a
+              key={s}
+              href={`#${s}`}
+              className="rounded-full px-4 py-1.5 text-xs capitalize text-zinc-400 transition hover:bg-white/5 hover:text-emerald-300"
+            >
+              {s}
+            </a>
+          ))}
         </div>
       </nav>
 
+      {/* ── hero ── */}
       <section
         id="top"
-        className="relative z-10 mx-auto grid max-w-7xl gap-10 px-6 pb-20 pt-12 md:grid-cols-[1.1fr_0.9fr] md:px-10 md:pb-28 md:pt-20"
+        className="relative z-10 mx-auto grid max-w-7xl gap-10 px-6 pb-20 pt-10 md:grid-cols-[1.2fr_0.8fr] md:px-10 md:pb-28 md:pt-16"
       >
         <motion.div variants={stagger} initial="hidden" animate="visible">
           <motion.div
             variants={fadeUp}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm text-emerald-100"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/8 px-4 py-2 text-xs text-emerald-200"
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.9)]" />
-            Current Graduate Student in Computing @ UConn
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#4ade80]" />
+            Graduate Student in Computing @ UConn
           </motion.div>
 
           <motion.h1
             variants={fadeUp}
-            className="max-w-4xl text-5xl font-semibold leading-tight tracking-[-0.04em] text-white md:text-7xl"
+            className="max-w-2xl text-5xl font-bold leading-[1.12] tracking-[-0.04em] text-white md:text-6xl"
           >
-            Building secure systems where embedded hardware, AI/ML, and cyber
-            defense meet.
+            Building{" "}
+            <span style={{ color: "#a3e635" }}>secure systems</span>{" "}
+            where{" "}
+            <span style={{ color: "#2dd4bf" }}>embedded hardware</span>
+            {", "}AI/ML, and{" "}
+            <span style={{ color: "#4ade80" }}>cyber defense</span>{" "}
+            meet.
           </motion.h1>
 
-          <motion.p
-            variants={fadeUp}
-            className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300"
-          >
-            I am a cybersecurity-focused computer science engineer working
-            across embedded security, machine learning research, secure
-            automation, and applied systems design.
+          <motion.p variants={fadeUp} className="mt-5 max-w-xl text-sm leading-7 text-zinc-400">
+            Cybersecurity-focused computer science engineer working across embedded security,
+            machine learning research, secure automation, and applied systems design.
           </motion.p>
 
-          <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
+          <motion.div variants={fadeUp} className="mt-7 flex flex-wrap gap-3">
             <a
               href="#projects"
-              className="group inline-flex items-center gap-2 rounded-full bg-emerald-300 px-5 py-3 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-200"
+              className="group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#022c1e] transition hover:brightness-110"
+              style={{ background: "linear-gradient(135deg, #22c55e, #14b8a6)" }}
             >
               View projects
               <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </a>
-
             <a
               href="mailto:masonmmoore1@gmail.com"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:border-emerald-300/40 hover:bg-emerald-300/10"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:border-emerald-300/30 hover:bg-emerald-300/8"
             >
               Contact me
             </a>
           </motion.div>
 
-          <motion.div
-            variants={fadeUp}
-            className="mt-8 flex flex-wrap gap-4 text-sm text-zinc-400"
-          >
-            <a
-              className="inline-flex items-center gap-2 hover:text-emerald-300"
-              href="mailto:masonmmoore1@gmail.com"
-            >
-              <Mail className="h-4 w-4" /> Email
+          <motion.div variants={fadeUp} className="mt-6 flex flex-wrap gap-5 text-xs text-zinc-500">
+            <a href="mailto:masonmmoore1@gmail.com" className="flex items-center gap-1.5 hover:text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><Mail className="h-3.5 w-3.5" /> Email
             </a>
-
-            <a
-              className="inline-flex items-center gap-2 hover:text-emerald-300"
-              href="https://github.com/M-moore1"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <FaGithub className="h-4 w-4" /> GitHub
+            <a href="https://github.com/M-moore1" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-400" /><FaGithub className="h-3.5 w-3.5" /> GitHub
             </a>
-
-            <a
-              className="inline-flex items-center gap-2 hover:text-emerald-300"
-              href="https://linkedin.com/in/masonmoore1"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <FaLinkedin className="h-4 w-4" /> LinkedIn
+            <a href="https://linkedin.com/in/masonmoore1" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-lime-400" /><FaLinkedin className="h-3.5 w-3.5" /> LinkedIn
             </a>
           </motion.div>
         </motion.div>
 
+        {/* profile card */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
+          initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           className="relative"
         >
-          <div className="absolute inset-0 rounded-[2rem] bg-emerald-300/20 blur-3xl" />
-
-          <div className="relative rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-black/40 backdrop-blur-xl">
-            <div className="mb-5 flex items-center justify-between">
-              <p className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-300">
-                Profile
-              </p>
-
-              <div className="flex gap-2">
-                <span className="h-3 w-3 rounded-full bg-emerald-300/80" />
-                <span className="h-3 w-3 rounded-full bg-lime-300/60" />
-                <span className="h-3 w-3 rounded-full bg-white/25" />
+          <div className="absolute inset-0 rounded-2xl opacity-40" style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(52,211,153,0.25), transparent 70%)" }} />
+          <div className="relative rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-400/60">Profile</p>
+              <div className="flex gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-lime-400/50" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
-                <div className="flex items-start gap-4">
-                  <GraduationCap className="mt-1 h-6 w-6 text-emerald-300" />
-
+            <div className="space-y-3">
+              <div className="rounded-xl border border-white/8 bg-black/20 p-4">
+                <div className="flex items-start gap-3">
+                  <GraduationCap className="mt-0.5 h-5 w-5 text-emerald-400 shrink-0" />
                   <div>
-                    <h3 className="text-lg font-semibold text-white">
-                      University of Connecticut
-                    </h3>
-                    <p className="mt-1 text-sm leading-6 text-zinc-300">
-                      M.S. Computing, expected May 2027
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-zinc-300">
-                      B.A. Spanish, expected May 2027
-                    </p>
-                    <p className="text-sm leading-6 text-zinc-300">
-                      B.S.E. Computer Science & Engineering
-                    </p>
+                    <p className="text-sm font-semibold text-white">University of Connecticut</p>
+                    <p className="mt-1 text-xs leading-5 text-zinc-400">M.S. Computing, expected May 2027</p>
+                    <p className="text-xs leading-5 text-zinc-400">B.A. Spanish, expected May 2027</p>
+                    <p className="text-xs leading-5 text-zinc-400">B.S.E. Computer Science & Engineering</p>
                   </div>
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
-                  <Award className="mb-4 h-6 w-6 text-emerald-300" />
-                  <p className="text-3xl font-semibold text-white">6</p>
-                  <p className="mt-1 text-sm text-zinc-400">
-                    Dean’s List semesters
-                  </p>
-                </div>
-
-                <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
-                  <Users className="mb-4 h-6 w-6 text-emerald-300" />
-                  <p className="text-3xl font-semibold text-white">100+</p>
-                  <p className="mt-1 text-sm text-zinc-400">
-                    Residents supported as RA
-                  </p>
-                </div>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { accent: "green",  Icon: Award, num: "6",    label: "Dean's List semesters" },
+                  { accent: "teal",   Icon: Users, num: "100+", label: "Residents supported as RA" },
+                  { accent: "lime",   Icon: Award, num: "93.6%", label: "UAV detection TPR" },
+                  { accent: "amber",  Icon: Award, num: "98.6%", label: "UAV detection TNR" },
+                ].map(({ accent, Icon, num, label }) => {
+                  const a = ACCENTS[accent];
+                  return (
+                    <div key={label} style={{ background: a.iconBg, border: `1px solid ${a.tagBorder}` }} className="rounded-xl p-3">
+                      <Icon className="mb-2 h-4 w-4" style={{ color: a.tagText }} />
+                      <p className="text-xl font-bold text-white">{num}</p>
+                      <p className="mt-0.5 text-[10px]" style={{ color: a.tagText }}>{label}</p>
+                    </div>
+                  );
+                })}
               </div>
 
-              <div className="rounded-3xl border border-emerald-300/20 bg-emerald-300/10 p-5">
-                <p className="text-sm leading-7 text-emerald-50">
-                  Winner of the Excellence in Spanish Engineering Award, North Shining Star, 
-                  Most Dependable RA, Sarah Levitan Fellowship
+              <div className="rounded-xl border border-lime-300/15 bg-lime-300/5 p-3">
+                <p className="text-xs leading-6 text-lime-200/70">
+                  🏅 Excellence in Spanish Engineering Award · North Shining Star · Most Dependable RA · Sarah Levitan Fellowship
                 </p>
               </div>
             </div>
@@ -452,90 +495,29 @@ export default function App() {
         </motion.div>
       </section>
 
-      <section
-        id="projects"
-        className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10"
-      >
+      {/* ── projects ── */}
+      <section id="projects" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
         <SectionHeading
           eyebrow="Selected work"
           title="Projects with clear security, systems, and research impact."
         >
-          I have completed many projects in the domain of engineering, both hardware and software. I have experience with a variety of subjects. I tend to like projects that have real word affects or things that I can directly use. I don't just want these to fluff up a resumé but rather to learn and built something meaninful.
+          Click any project to expand details. I tend to build things that have real-world impact or that I can directly use — not just résumé fluff.
         </SectionHeading>
 
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          className="grid gap-5 md:grid-cols-2 xl:grid-cols-3"
-        >
-          {projects.map((project, index) => {
-            const Icon = project.icon;
-
-            return (
-              <motion.article
-                key={project.title}
-                variants={fadeUp}
-                className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] p-6 shadow-xl shadow-black/20 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-emerald-300/30 ${
-                  index === 0 ? "md:col-span-2" : ""
-                }`}
-              >
-                <div className="absolute right-[-4rem] top-[-4rem] h-40 w-40 rounded-full bg-emerald-300/10 blur-2xl transition group-hover:bg-emerald-300/20" />
-
-                <div className="relative">
-                  <div className="mb-5 flex items-start justify-between gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-300/10">
-                      <Icon className="h-6 w-6 text-emerald-300" />
-                    </div>
-
-                    <span className="rounded-full bg-black/25 px-3 py-1 text-xs text-zinc-400">
-                      {project.type}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-semibold tracking-tight text-white">
-                    {project.title}
-                  </h3>
-
-                  <p className="mt-3 text-sm leading-7 text-zinc-300">
-                    {project.summary}
-                  </p>
-
-                  <ul className="mt-5 space-y-2 text-sm text-zinc-300">
-                    {project.highlights.map((item) => (
-                      <li key={item} className="flex gap-2">
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <Pill key={tag}>{tag}</Pill>
-                    ))}
-                  </div>
-                </div>
-              </motion.article>
-            );
-          })}
-        </motion.div>
+        <div className="space-y-2.5">
+          {projects.map((project, index) => (
+            <ProjectRow key={project.title} project={project} index={index} />
+          ))}
+        </div>
       </section>
 
-      <section
-        id="experience"
-        className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10"
-      >
-        <SectionHeading
-          eyebrow="Experience"
-          title="Cybersecurity, Research, and Teaching Experience."
-        >
-          A focused timeline showing where my portfolio skills have been
-          applied in both professional and academic environments.
+      {/* ── experience ── */}
+      <section id="experience" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
+        <SectionHeading eyebrow="Experience" title="Cybersecurity, Research, and Teaching.">
+          A focused timeline showing where my skills have been applied in professional and academic environments.
         </SectionHeading>
 
-        <div className="relative space-y-5 before:absolute before:left-4 before:top-4 before:h-[calc(100%-2rem)] before:w-px before:bg-emerald-300/20 md:before:left-1/2">
+        <div className="relative space-y-4 before:absolute before:left-4 before:top-4 before:h-[calc(100%-2rem)] before:w-px before:bg-emerald-300/15 md:before:left-1/2">
           {experiences.map((exp, index) => (
             <motion.div
               key={exp.org}
@@ -543,34 +525,22 @@ export default function App() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.06 }}
-              className={`relative grid gap-5 md:grid-cols-2 ${
-                index % 2 ? "md:[&>div]:col-start-2" : ""
-              }`}
+              className={`relative grid gap-5 md:grid-cols-2 ${index % 2 ? "md:[&>div]:col-start-2" : ""}`}
             >
-              <div className="relative ml-10 rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-6 backdrop-blur md:ml-0">
-                <span className="absolute -left-[2.25rem] top-8 h-4 w-4 rounded-full border-4 border-[#06110d] bg-emerald-300 md:left-auto md:right-[-2.55rem]" />
-
-                <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-zinc-400">
+              <div className="relative ml-10 rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur md:ml-0">
+                <span className="absolute -left-[2.25rem] top-6 h-3.5 w-3.5 rounded-full border-4 border-[#020c06] bg-emerald-400 md:left-auto md:right-[-2.4rem]" />
+                <div className="mb-2 flex flex-wrap items-center gap-2 text-[10px] text-zinc-500">
                   <span>{exp.period}</span>
-                  <span>•</span>
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="h-3 w-3" /> {exp.location}
-                  </span>
+                  <span>·</span>
+                  <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{exp.location}</span>
                 </div>
-
-                <h3 className="text-xl font-semibold text-white">
-                  {exp.org}
-                </h3>
-
-                <p className="mt-1 text-sm font-medium text-emerald-300">
-                  {exp.role}
-                </p>
-
-                <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
+                <h3 className="text-base font-bold text-white">{exp.org}</h3>
+                <p className="mt-0.5 text-xs font-medium text-emerald-400">{exp.role}</p>
+                <ul className="mt-4 space-y-2.5 text-xs leading-6 text-zinc-400">
                   {exp.bullets.map((bullet) => (
-                    <li key={bullet} className="flex gap-3">
-                      <BriefcaseBusiness className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300/80" />
-                      <span>{bullet}</span>
+                    <li key={bullet} className="flex gap-2.5">
+                      <BriefcaseBusiness className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/60" />
+                      {bullet}
                     </li>
                   ))}
                 </ul>
@@ -580,37 +550,27 @@ export default function App() {
         </div>
       </section>
 
-      <section
-        id="skills"
-        className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10"
-      >
-        <SectionHeading
-          eyebrow="Toolkit"
-          title="A technical stack built around secure systems."
-        >
-          I have other skills in addition to just my ability to build projects. I really enjoy learning and bettering myself.
-        </SectionHeading>
+      {/* ── skills ── */}
+      <section id="skills" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
+        <SectionHeading eyebrow="Toolkit" title="A technical stack built around secure systems." />
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {skillGroups.map((group) => {
             const Icon = group.icon;
-
+            const a = ACCENTS[group.accent];
             return (
               <div
                 key={group.title}
-                className="rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-6 backdrop-blur"
+                style={{ border: `1px solid ${a.tagBorder}`, background: a.tag }}
+                className="rounded-2xl p-5 backdrop-blur"
               >
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-300/10">
-                  <Icon className="h-6 w-6 text-emerald-300" />
+                <div style={{ background: a.iconBg, border: `1px solid ${a.tagBorder}` }} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl">
+                  <Icon className="h-5 w-5" style={{ color: a.tagText }} />
                 </div>
-
-                <h3 className="text-lg font-semibold text-white">
-                  {group.title}
-                </h3>
-
-                <div className="mt-4 flex flex-wrap gap-2">
+                <h3 className="text-sm font-bold text-white">{group.title}</h3>
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   {group.items.map((item) => (
-                    <Pill key={item}>{item}</Pill>
+                    <Tag key={item} accent={group.accent}>{item}</Tag>
                   ))}
                 </div>
               </div>
@@ -619,117 +579,65 @@ export default function App() {
         </div>
       </section>
 
+      {/* ── leadership ── */}
       <section className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
-        <div className="overflow-hidden rounded-[2rem] border border-emerald-300/20 bg-gradient-to-br from-emerald-300/15 to-white/[0.04] p-8 md:p-10">
-          <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-center">
+        <div className="overflow-hidden rounded-2xl border border-emerald-300/15 bg-gradient-to-br from-emerald-300/8 to-white/[0.03] p-7 md:p-10">
+          <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-start">
             <div>
-              <p className="text-sm font-medium uppercase tracking-[0.3em] text-emerald-300">
-                Leadership
-              </p>
-
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white">
-                Beyond the code.
-              </h2>
-
-              <p className="mt-4 leading-7 text-zinc-300">
-                Experience leading recruiting operations, supporting
-                residential communities, and teaching security-focused
-                programming labs.
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-400/60">Leadership</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Beyond the code.</h2>
+              <p className="mt-3 text-sm leading-7 text-zinc-400">
+                Experience leading recruiting operations, supporting residential communities, and teaching security-focused programming labs.
               </p>
             </div>
-
-
-            {/* HUSKY QUANTITATIVE GROUP INFORMATION */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
-                <h3 className="font-semibold text-white">
-                  Vice President of Operations
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-zinc-300">
-                  Built a recruiting pipeline for 80+ applicants and supported interview 
-                  selection for the Husky Quantitative Group, the first ever student run 
-                  Quant fund at the University of Connecticut.
-                </p>
-              </div>
-
-
-              {/* RESIDENT ASSISTANT INFORMATION */}
-              <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
-                <h3 className="font-semibold text-white">
-                  Resident Assistant
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-zinc-300">
-                  Managed programming and community engagement for 100+
-                  residents across multiple academic years.
-                </p>
-              </div>
-
-
-              {/* TEACHING ASSISTANT INFORMATION */}
-              <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
-                <h3 className="font-semibold text-white">
-                  Teaching Assistant
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-zinc-300">
-                  Led labs for over 100 students focused on a variety of hardware and software security practices and offensive attacks. Graded student labs and provided feedback to assist learning.
-                </p>
-              </div>
-
-
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                { title: "Vice President of Operations", body: "Built a recruiting pipeline for 80+ applicants for the Husky Quantitative Group — the first student-run quant fund at UConn." },
+                { title: "Resident Assistant", body: "Managed programming and community engagement for 100+ residents across multiple academic years." },
+                { title: "Teaching Assistant", body: "Led labs for 100+ students on hardware and software security practices and offensive attacks. Graded labs and provided feedback.", span: true },
+              ].map(({ title, body, span }) => (
+                <div key={title} className={`rounded-xl border border-white/8 bg-black/20 p-4 ${span ? "sm:col-span-2" : ""}`}>
+                  <h3 className="text-sm font-bold text-white">{title}</h3>
+                  <p className="mt-2 text-xs leading-6 text-zinc-400">{body}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <footer
-        id="contact"
-        className="relative z-10 mx-auto max-w-7xl px-6 pb-10 pt-12 md:px-10"
-      >
-        <div className="flex flex-col gap-6 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between">
+      {/* ── contact footer ── */}
+      <footer id="contact" className="relative z-10 mx-auto max-w-7xl px-6 pb-10 pt-8 md:px-10">
+        <div className="flex flex-col gap-5 border-t border-white/8 pt-8 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-white">
-              Let’s build something secure.
-            </h2>
-
-            <p className="mt-2 text-sm text-zinc-400">
-              Open to cybersecurity, AI security, embedded systems, and research
-              opportunities.
+            <h2 className="text-xl font-bold text-white">Let's build something secure.</h2>
+            <p className="mt-1 text-xs text-zinc-500">
+              Open to cybersecurity, AI security, embedded systems, and research opportunities.
             </p>
           </div>
-
-          <div className="flex flex-wrap gap-3 text-sm">
-            <a
-              href="mailto:masonmmoore1@gmail.com"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-zinc-200 transition hover:border-emerald-300/40 hover:text-emerald-300"
-            >
-              <Mail className="h-4 w-4" /> Email
-            </a>
-
-
-
-            <a
-              href="https://github.com/M-moore1"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-zinc-200 transition hover:border-emerald-300/40 hover:text-emerald-300"
-            >
-              <FaGithub className="h-4 w-4" /> GitHub
-            </a>
-
-            <a
-              href="https://linkedin.com/in/masonmoore1"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-zinc-200 transition hover:border-emerald-300/40 hover:text-emerald-300"
-            >
-              <FaLinkedin className="h-4 w-4" /> LinkedIn
-            </a>
+          <div className="flex flex-wrap gap-2.5 text-xs">
+            {[
+              { href: "mailto:masonmmoore1@gmail.com", icon: Mail, label: "Email", accent: "green" },
+              { href: "https://github.com/M-moore1", icon: FaGithub, label: "GitHub", accent: "teal", external: true },
+              { href: "https://linkedin.com/in/masonmoore1", icon: FaLinkedin, label: "LinkedIn", accent: "sky", external: true },
+            ].map(({ href, icon: Icon, label, accent, external }) => {
+              const a = ACCENTS[accent];
+              return (
+                <a
+                  key={label}
+                  href={href}
+                  {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+                  style={{ border: `1px solid ${a.tagBorder}`, color: a.tagText, background: a.tag }}
+                  className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 transition hover:brightness-110"
+                >
+                  <Icon className="h-3.5 w-3.5" /> {label}
+                </a>
+              );
+            })}
           </div>
         </div>
       </footer>
+
     </main>
   );
 }
