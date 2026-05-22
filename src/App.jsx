@@ -60,9 +60,9 @@ const projects = [
     summary:
       "Evaluated how frontier large vision-language models handle visual information from a security perspective, including prompt injection and hallucination classification.",
     highlights: [
-      "Designed tailored prompt-injection tests",
-      "Classified unexpected outputs into security-relevant categories",
-      "Focused on model obedience, hallucination risk, and visual attack surfaces",
+      "Built a 100-case adversarial benchmark evaluating frontier LVLMs for prompt injection and hallucination.",
+      "Quantified hallucination rates of 55% (Gemini), 35% (Opus), and 25% (o3) across visual prompt injection attacks.",
+      "Demonstrated system prompt leakage and adversarial image misclassification across all three frontier models.",
     ],
     tags: ["LVLMs", "Prompt Injection", "AI Security", "Evaluation"],
   },
@@ -131,8 +131,9 @@ const projects = [
       "Using OpenCV, creates a program to snapshot a scrambled Rubik's Cube and solve it in the fewest moves.",
     highlights: [
       "Detects face colours from webcam snapshots using HSV segmentation",
-      "Maps detected state to an optimal solve algorithm",
-      "Returns the minimum-move solution sequence",
+      "Integrated Kociemba two-phase algorithm to generate optimal solve sequences from the reconstructed cube state.",
+      "Implemented fallback manual entry and multi-camera support to handle poor lighting and hardware variability.",
+      "Packaged as a Python CLI with pytest test suite and orientation validation to catch impossible cube states.",
     ],
     tags: ["Python", "OpenCV", "Computer Vision", "Algorithms"],
   },
@@ -143,23 +144,26 @@ const experiences = [
   {
     org: "RTX Pratt & Whitney",
     role: "Cybersecurity & Embedded Systems Research Intern",
-    period: "Aug 2025 – Present",
+    period: "Aug 2025 – May 2026",
     location: "Storrs, CT",
     bullets: [
-      "Engineered a secure BLE link between an embedded Linux board and ESP32 microcontroller in C.",
-      "Implemented authenticated BLE pairing and encrypted GATT transport through UART AT commands.",
-      "Delivered a secure transport layer after resolving flash partitioning, ESP-IDF, and API limitations.",
+      "Implemented AES-256-GCM real-time encryption in WebAssembly and on ESP32 to secure commands traffic.",
+      "Built a shared wolfSSL AES-256-GCM C library to standardize encryption across Linux and ESP32.",
+      "Engineered an Ubertooth One BLE attack suite to validate command injection and session hijacking mitigations.",
+      "Validated wolfSSL TLS 1.2, mutual authentication, and AES-256-GCM defeated all attacks in secure mode.",
     ],
   },
   {
     org: "Synchrony Financial",
     role: "Cybersecurity Intern",
-    period: "May 2024 – Aug 2024",
+    period: "May 2024 – Aug 2025",
     location: "Stamford, CT",
     bullets: [
-      "Automated weekly reporting across thousands of active risk profiles, reducing missed-SLA risk by over 90%.",
-      "Reconciled 1,300+ risk profiles and resolved 300+ mismatches, improving reporting accuracy by 25%.",
-      "Automated SIRF review workflows, reducing processing time by 90%.",
+      "Automated weekly SLA tracking across 10,000+ risk profiles using VBA, eliminating missed deadlines.",
+      "Resolved 300+ data mismatches across 1,300+ risk profiles via cross-validation, improving accuracy by 25%.",
+      "Redesigned the company-wide Security Information Request Form, formally adopted across the organization.",
+      "Deployed a Microsoft agentic AI to review Security Information Request Forms, cutting processing time by 90%.",
+      "Researched industry breaches and CVEs to produce executive cybersecurity briefings for manager meetings.",
     ],
   },
   {
@@ -168,17 +172,19 @@ const experiences = [
     period: "Aug 2024 – Dec 2024",
     location: "Storrs, CT",
     bullets: [
-      "Engineered a TensorFlow CNN for adversarial UAV acoustic detection.",
-      "Reached 93.6% TPR and 98.6% TNR while modelling a substantially lower-cost alternative to a government system.",
+      "Built a TensorFlow CNN using multi-taper spectrograms to detect RF-silent adversarial UA Vs for the U.S. Department of State, achieving 93.6% TPR and 98.6% TNR across a custom field-collected audio dataset.",
+      "Tripled training data by recording consumer drone audio and applying multi-taper spectrogram preprocessing.",
+      "Deployed Raspberry Pi with cheap microphones, replicating a $40M government system at 97% cost reduction.",
     ],
   },
   {
     org: "University of Connecticut",
     role: "Teaching Assistant",
-    period: "Aug 2024 – Present",
+    period: "Aug 2024 – May 2026",
     location: "Storrs, CT",
     bullets: [
       "Led cybersecurity lab sections and office hours covering red-team and blue-team programming fundamentals in Python and C.",
+      "Covered cybersecurity (CSE 3140), computer security (CSE 4400/5400), and digital logic design (CSE 2301)"
     ],
   },
 ];
@@ -501,7 +507,7 @@ export default function App() {
           eyebrow="Selected work"
           title="Projects with clear security, systems, and research impact."
         >
-          Click any project to expand details. I tend to build things that have real-world impact or that I can directly use — not just résumé fluff.
+          Click any project to expand details. I tend to build things that have real-world impact or that I can directly use — not just resume fluff (Although it certainly helps).
         </SectionHeading>
 
         <div className="space-y-2.5">
@@ -593,7 +599,7 @@ export default function App() {
             <div className="grid gap-3 sm:grid-cols-2">
               {[
                 { title: "Vice President of Operations", body: "Built a recruiting pipeline for 80+ applicants for the Husky Quantitative Group — the first student-run quant fund at UConn." },
-                { title: "Resident Assistant", body: "Managed programming and community engagement for 100+ residents across multiple academic years." },
+                { title: "Resident Assistant", body: "Managed community programming and resident engagement for 100+ residents across 5 semesters. Recipient of the North Shining Star (Highest Honor) and voted most dependable RA on staff of 43." },
                 { title: "Teaching Assistant", body: "Led labs for 100+ students on hardware and software security practices and offensive attacks. Graded labs and provided feedback.", span: true },
               ].map(({ title, body, span }) => (
                 <div key={title} className={`rounded-xl border border-white/8 bg-black/20 p-4 ${span ? "sm:col-span-2" : ""}`}>
