@@ -174,7 +174,7 @@ const experiences = [
     period: "Aug 2024 – Dec 2024",
     location: "Storrs, CT",
     bullets: [
-      "Built a TensorFlow CNN using multi-taper spectrograms to detect RF-silent adversarial UA Vs for the U.S. Department of State, achieving 93.6% TPR and 98.6% TNR across a custom field-collected audio dataset.",
+      "Built a TensorFlow CNN using multi-taper spectrograms to detect RF-silent adversarial UAVs for the U.S. Department of State, achieving 93.6% TPR and 98.6% TNR across a custom field-collected audio dataset.",
       "Tripled training data by recording consumer drone audio and applying multi-taper spectrogram preprocessing.",
       "Deployed Raspberry Pi with cheap microphones, replicating a $40M government system at 97% cost reduction.",
     ],
