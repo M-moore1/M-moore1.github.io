@@ -200,12 +200,12 @@ const skillGroups = [
 
 
 /* ─── about data ──────────────────────────────────────────────── */
-const aboutInterests = ["Interest 1", "Interest 2", "Interest 3", "Interest 4"];
+const aboutInterests = ["Board Games", "Languages", "Cooking", "Fishing & Hiking"];
 
 const aboutFacts = [
-  { value: "Fact value",   label: "fact label",   accent: "green"  },
-  { value: "Fact value",   label: "fact label",   accent: "teal"   },
-  { value: "Fact value",   label: "fact label",   accent: "lime"   },
+  { value: "I speak 3 languages",   label: "English, Spanish, French",   accent: "green"  },
+  { value: "I love to sail",   label: "I've done 420s & a sailfish",   accent: "teal"   },
+  { value: "I love to swim",   label: "I swam competitively; my events were the 500 and the 200 IM",   accent: "lime"   },
 ];
 
 
