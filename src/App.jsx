@@ -19,6 +19,7 @@ import {
   Award,
   Users,
   Heart,
+  BellPlus,
   ChevronDown,
 } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
@@ -40,18 +41,16 @@ const ACCENTS = {
 /* ─── project data ────────────────────────────────────────────── */
 const projects = [
   {
-    title: "Secure Embedded Wireless Vehicle Architecture",
-    type: "Embedded Security",
+    title: "JobAlert",
+    type: "Web tool & live app",
     accent: "green",
-    icon: Shield,
+    icon: BellPlus,
     summary:
-      "Built a secure BLE communication layer between an embedded Linux board (Xilinx ZCU102) and ESP32 microcontroller using authenticated pairing, encrypted transport, and TLS.",
+      "Built a discord bot to post job new job openings the moment they happen.",
     highlights: [
-      "Implemented authenticated BLE pairing and encrypted GATT transport",
-      "Deployed wolfSSL TLS 1.2 over BLE connection with SPIFFS certificate storage",
-      "Used AES-GCM for real-time encryption of movement packets",
+      "Ongoing Project! Stay tooned for details!",
     ],
-    tags: ["BLE", "ESP32", "wolfSSL", "AES-GCM-256", "C"],
+    tags: ["Python", "Webscraping", "Github Actions/CI/CD", "RestAPI Integration", "Data Aggregation"],
   },
   {
     title: "Security-Relevant Hallucinations in Frontier LVLMs",
@@ -68,18 +67,20 @@ const projects = [
     tags: ["LVLMs", "Prompt Injection", "AI Security", "Evaluation"],
   },
   {
-    title: "Acoustic Detection of Adversarial UAVs",
+    title: "Malware Classifier",
     type: "Machine Learning",
     accent: "teal",
     icon: Cpu,
     summary:
-      "Engineered a TensorFlow CNN for acoustic UAV detection with strong drone-present and no-drone validation performance.",
+      "An ML pipeline that classifies Windows PE binaries into 8 malware families using PE header features, achieving 80.3% accuracy and 0.97 AUC with a soft-voting ensemble of Random Forest, LightGBM, and MLP.",
     highlights: [
-      "Achieved 93.6% true positive rate",
-      "Achieved 98.6% true negative rate",
-      "Projected under $1M implementation versus a $40M system",
+      "Engineered 282 features from PE headers including byte histograms, section entropy, import tables, and string patterns — mirroring the structure of Elastic's real-world EMBER dataset",
+      "Trained and compared three model architectures (Random Forest, LightGBM, MLP) then combined them into a weighted ensemble that outperformed every individual model",
+      "Applied SMOTE oversampling to balance 8 imbalanced malware classes, boosting minority-family recall for underrepresented threats like Rootkit and Backdoor",
+      "Built a production-ready inference engine that accepts real PE binaries and returns predicted family, confidence score, and full probability distribution across all classes",
+      "Achieved 95% F1 on benign detection and 0.97 macro AUC — metrics that matter in real SOC environments where false positives erode analyst trust",
     ],
-    tags: ["TensorFlow", "CNN", "Signal Processing", "Acoustics"],
+    tags: ["Malware Analysis", "Ensemble Methods", "Random Forest", "LightGBM", "MLP"],
   },
   {
     title: "Secure Password Manager & Generator",
