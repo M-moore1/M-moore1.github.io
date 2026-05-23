@@ -18,6 +18,7 @@ import {
   Languages,
   Award,
   Users,
+  Heart,
   ChevronDown,
 } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
@@ -197,6 +198,19 @@ const skillGroups = [
   { title: "Spoken Languages", icon: Languages, accent: "lime",  items: ["English", "Spanish", "French"] },
 ];
 
+
+/* ─── about data ──────────────────────────────────────────────── */
+const aboutInterests = ["Interest 1", "Interest 2", "Interest 3", "Interest 4"];
+
+const aboutFacts = [
+  { value: "Fact value",   label: "fact label",   accent: "green"  },
+  { value: "Fact value",   label: "fact label",   accent: "teal"   },
+  { value: "Fact value",   label: "fact label",   accent: "lime"   },
+];
+
+
+
+
 /* ─── small reusable components ───────────────────────────────── */
 function Tag({ children, accent }) {
   const a = ACCENTS[accent] ?? ACCENTS.green;
@@ -368,7 +382,7 @@ export default function App() {
         </a>
 
         <div className="hidden items-center gap-1 text-sm md:flex">
-          {["projects", "experience", "skills", "contact"].map((s) => (
+          {["about", "projects", "experience", "skills", "contact"].map((s) => (
             <a
               key={s}
               href={`#${s}`}
@@ -500,6 +514,65 @@ export default function App() {
           </div>
         </motion.div>
       </section>
+
+    {/* ── about ── */}
+      <section id="about" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
+        <SectionHeading eyebrow="About me" title="The person behind the projects." />
+
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="grid gap-6 md:grid-cols-[1.3fr_0.7fr] md:items-start"
+        >
+          {/* left — bio + interests */}
+          <div className="space-y-4">
+            <motion.div variants={fadeUp} className="rounded-2xl border border-white/8 bg-white/[0.04] p-6 backdrop-blur">
+              <p className="text-sm leading-7 text-zinc-400">
+                {/* ✏️ bio paragraph 1 */}
+                Your bio here...
+              </p>
+              <p className="mt-4 text-sm leading-7 text-zinc-400">
+                {/* ✏️ bio paragraph 2 */}
+                Second paragraph here...
+              </p>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="rounded-2xl border border-white/8 bg-white/[0.04] p-6 backdrop-blur">
+              <div className="mb-4 flex items-center gap-2">
+                <Heart className="h-4 w-4 text-emerald-400" />
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-400/60">
+                  Interests &amp; Hobbies
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {aboutInterests.map((item) => (
+                  <Tag key={item} accent="green">{item}</Tag>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* right — quick facts */}
+          <motion.div variants={fadeUp} className="space-y-3">
+            {aboutFacts.map(({ value, label, accent }) => {
+              const a = ACCENTS[accent];
+              return (
+                <div
+                  key={label}
+                  style={{ border: `1px solid ${a.tagBorder}`, background: a.tag }}
+                  className="rounded-2xl p-5 backdrop-blur"
+                >
+                  <p className="text-xl font-bold text-white">{value}</p>
+                  <p className="mt-0.5 text-[10px]" style={{ color: a.tagText }}>{label}</p>
+                </div>
+              );
+            })}
+          </motion.div>
+        </motion.div>
+      </section>
+
 
       {/* ── projects ── */}
       <section id="projects" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
