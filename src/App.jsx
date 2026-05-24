@@ -22,7 +22,7 @@ import {
   BellPlus,
   ChevronDown,
 } from "lucide-react";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaDiscord } from "react-icons/fa";
 
 /* ─── animation variants ─────────────────────────────────────── */
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } };
@@ -44,7 +44,7 @@ const projects = [
     title: "JobAlert",
     type: "Web tool & live app",
     accent: "green",
-    icon: BellPlus,
+    icon: FaDiscord,
     summary:
       "Built a discord bot to post job new job openings the moment they happen.",
     highlights: [
