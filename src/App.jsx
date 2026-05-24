@@ -30,12 +30,12 @@ const stagger = { visible: { transition: { staggerChildren: 0.09 } } };
 
 /* ─── accent palette — one colour per project domain ─────────── */
 const ACCENTS = {
-  green:  { tag: "rgba(74,222,128,0.12)",  tagBorder: "rgba(74,222,128,0.25)",  tagText: "#4ade80",  cardBorder: "rgba(34,197,94,0.22)",  glow: "rgba(34,197,94,0.18)",  iconBg: "rgba(34,197,94,0.12)"  },
-  purple: { tag: "rgba(167,139,250,0.10)", tagBorder: "rgba(167,139,250,0.22)", tagText: "#a78bfa",  cardBorder: "rgba(167,139,250,0.22)", glow: "rgba(167,139,250,0.15)", iconBg: "rgba(167,139,250,0.12)" },
-  teal:   { tag: "rgba(45,212,191,0.10)",  tagBorder: "rgba(45,212,191,0.22)",  tagText: "#2dd4bf",  cardBorder: "rgba(20,184,166,0.22)",  glow: "rgba(20,184,166,0.15)",  iconBg: "rgba(20,184,166,0.12)"  },
-  amber:  { tag: "rgba(251,191,36,0.10)",  tagBorder: "rgba(251,191,36,0.22)",  tagText: "#fbbf24",  cardBorder: "rgba(251,191,36,0.22)",  glow: "rgba(251,191,36,0.13)",  iconBg: "rgba(251,191,36,0.10)"  },
-  lime:   { tag: "rgba(163,230,53,0.10)",  tagBorder: "rgba(163,230,53,0.22)",  tagText: "#a3e635",  cardBorder: "rgba(163,230,53,0.22)",  glow: "rgba(163,230,53,0.12)",  iconBg: "rgba(163,230,53,0.10)"  },
-  sky:    { tag: "rgba(56,189,248,0.10)",  tagBorder: "rgba(56,189,248,0.22)",  tagText: "#38bdf8",  cardBorder: "rgba(56,189,248,0.22)",  glow: "rgba(56,189,248,0.13)",  iconBg: "rgba(56,189,248,0.10)"  },
+  green: { tag: "rgba(74,222,128,0.12)", tagBorder: "rgba(74,222,128,0.25)", tagText: "#4ade80", cardBorder: "rgba(34,197,94,0.22)", glow: "rgba(34,197,94,0.18)", iconBg: "rgba(34,197,94,0.12)" },
+  purple: { tag: "rgba(167,139,250,0.10)", tagBorder: "rgba(167,139,250,0.22)", tagText: "#a78bfa", cardBorder: "rgba(167,139,250,0.22)", glow: "rgba(167,139,250,0.15)", iconBg: "rgba(167,139,250,0.12)" },
+  teal: { tag: "rgba(45,212,191,0.10)", tagBorder: "rgba(45,212,191,0.22)", tagText: "#2dd4bf", cardBorder: "rgba(20,184,166,0.22)", glow: "rgba(20,184,166,0.15)", iconBg: "rgba(20,184,166,0.12)" },
+  amber: { tag: "rgba(251,191,36,0.10)", tagBorder: "rgba(251,191,36,0.22)", tagText: "#fbbf24", cardBorder: "rgba(251,191,36,0.22)", glow: "rgba(251,191,36,0.13)", iconBg: "rgba(251,191,36,0.10)" },
+  lime: { tag: "rgba(163,230,53,0.10)", tagBorder: "rgba(163,230,53,0.22)", tagText: "#a3e635", cardBorder: "rgba(163,230,53,0.22)", glow: "rgba(163,230,53,0.12)", iconBg: "rgba(163,230,53,0.10)" },
+  sky: { tag: "rgba(56,189,248,0.10)", tagBorder: "rgba(56,189,248,0.22)", tagText: "#38bdf8", cardBorder: "rgba(56,189,248,0.22)", glow: "rgba(56,189,248,0.13)", iconBg: "rgba(56,189,248,0.10)" },
 };
 
 /* ─── project data ────────────────────────────────────────────── */
@@ -191,12 +191,56 @@ const experiences = [
   },
 ];
 
+
+
+/* ─── ventures data ─────────────────────────────────────────── */
+const ventures = [
+  {
+    name: "Health & Wellness Company",
+    role: "Co-Founder & Lead Engineer",
+    period: "2026 – Present",
+    accent: "purple",
+    icon: Users,
+    description: "[One or two sentences describing what the company does.]",
+    bullets: [
+      "[Key thing you are building or have shipped]",
+      "[Another highlight — traction, tech, or impact]",
+    ],
+    tags: ["[Tag1]", "[Tag2]", "[Tag3]"],
+    link: null, // or swap null for "https://yourcompany.com"
+  },
+  {
+    name: "Freelance Web Design",
+    role: "Founder",
+    period: "2026 – Present",
+    accent: "green",
+    icon: Code2,
+    description:
+      "Designing and developing custom websites for individuals and small businesses — handling the full project lifecycle from initial scoping through deployment.",
+    bullets: [
+      "Build and ship responsive, production-ready websites tailored to each client's brand and goals",
+      "Manage client relationships, requirements, timelines, and delivery end-to-end",
+    ],
+    tags: ["Web Design", "HTML/CSS", "JavaScript", "Client Work"],
+    link: null,
+  },
+];
+
+
+
+
+
+
+
+
+
+
 /* ─── skill groups ────────────────────────────────────────────── */
 const skillGroups = [
-  { title: "Languages",      icon: Code2,      accent: "green",  items: ["Python", "C", "C++", "R"] },
-  { title: "Security + ML",  icon: Shield,     accent: "purple", items: ["PyCryptoDome", "Scapy", "OpenSSL", "PyTorch", "scikit-learn", "Hugging Face", "NumPy"] },
-  { title: "Tools",          icon: Cpu,        accent: "teal",   items: ["Wireshark", "Nmap", "Docker", "Git", "VSCode", "PlatformIO", "ESP-IDF", "UART", "LTSpice"] },
-  { title: "Spoken Languages", icon: Languages, accent: "lime",  items: ["English", "Spanish", "French"] },
+  { title: "Languages", icon: Code2, accent: "green", items: ["Python", "C", "C++", "R"] },
+  { title: "Security + ML", icon: Shield, accent: "purple", items: ["PyCryptoDome", "Scapy", "OpenSSL", "PyTorch", "scikit-learn", "Hugging Face", "NumPy"] },
+  { title: "Tools", icon: Cpu, accent: "teal", items: ["Wireshark", "Nmap", "Docker", "Git", "VSCode", "PlatformIO", "ESP-IDF", "UART", "LTSpice"] },
+  { title: "Spoken Languages", icon: Languages, accent: "lime", items: ["English", "Spanish", "French"] },
 ];
 
 
@@ -204,9 +248,9 @@ const skillGroups = [
 const aboutInterests = ["Board Games", "Languages", "Cooking", "Fishing & Hiking"];
 
 const aboutFacts = [
-  { value: "I speak 3 languages",   label: "English, Spanish, French",   accent: "green"  },
-  { value: "I love to sail",   label: "I've done 420s & a sailfish",   accent: "teal"   },
-  { value: "I love to swim",   label: "I swam competitively; my events were the 500 and the 200 IM",   accent: "lime"   },
+  { value: "I speak 3 languages", label: "English, Spanish, French", accent: "green" },
+  { value: "I love to sail", label: "I've done 420s & a sailfish", accent: "teal" },
+  { value: "I love to swim", label: "I swam competitively; my events were the 500 and the 200 IM", accent: "lime" },
 ];
 
 
@@ -344,6 +388,12 @@ function ProjectRow({ project, index }) {
   );
 }
 
+
+
+
+
+
+
 /* ─── main app ────────────────────────────────────────────────── */
 export default function App() {
   return (
@@ -383,7 +433,7 @@ export default function App() {
         </a>
 
         <div className="hidden items-center gap-1 text-sm md:flex">
-          {["about", "projects", "experience", "skills", "contact"].map((s) => (
+          {["about", "projects", "experience", "ventures", "skills", "contact"].map((s) => (
             <a
               key={s}
               href={`#${s}`}
@@ -490,10 +540,10 @@ export default function App() {
 
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { accent: "green",  Icon: Award, num: "6",    label: "Dean's List semesters" },
-                  { accent: "teal",   Icon: Users, num: "100+", label: "Residents supported as RA" },
-                  { accent: "lime",   Icon: Award, num: "93.6%", label: "UAV detection TPR" },
-                  { accent: "amber",  Icon: Award, num: "98.6%", label: "UAV detection TNR" },
+                  { accent: "green", Icon: Award, num: "6", label: "Dean's List semesters" },
+                  { accent: "teal", Icon: Users, num: "100+", label: "Residents supported as RA" },
+                  { accent: "lime", Icon: Award, num: "93.6%", label: "UAV detection TPR" },
+                  { accent: "amber", Icon: Award, num: "98.6%", label: "UAV detection TNR" },
                 ].map(({ accent, Icon, num, label }) => {
                   const a = ACCENTS[accent];
                   return (
@@ -516,7 +566,7 @@ export default function App() {
         </motion.div>
       </section>
 
-    {/* ── about ── */}
+      {/* ── about ── */}
       <section id="about" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
         <SectionHeading eyebrow="About me" title="The person behind the projects." />
 
@@ -591,6 +641,11 @@ export default function App() {
         </div>
       </section>
 
+
+
+
+
+
       {/* ── experience ── */}
       <section id="experience" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
         <SectionHeading eyebrow="Experience" title="Cybersecurity, Research, and Teaching.">
@@ -630,94 +685,175 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── skills ── */}
-      <section id="skills" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
-        <SectionHeading eyebrow="Toolkit" title="A technical stack built around secure systems." />
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {skillGroups.map((group) => {
-            const Icon = group.icon;
-            const a = ACCENTS[group.accent];
+      {/* ── ventures ── */}
+      <section id="ventures" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
+        <SectionHeading eyebrow="Ventures" title="Things I'm building independently.">
+          Projects I've started or co-founded — applying technical skills outside of academic and professional settings.
+        </SectionHeading>
+
+        <div className="grid gap-5 md:grid-cols-2">
+          {ventures.map((venture, index) => {
+            const a = ACCENTS[venture.accent] ?? ACCENTS.green;
+            const Icon = venture.icon;
             return (
-              <div
-                key={group.title}
-                style={{ border: `1px solid ${a.tagBorder}`, background: a.tag }}
-                className="rounded-2xl p-5 backdrop-blur"
+              <motion.div
+                key={venture.name}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+                style={{ border: `1px solid ${a.cardBorder}` }}
+                className="rounded-2xl bg-white/[0.04] p-6 backdrop-blur flex flex-col gap-4"
               >
-                <div style={{ background: a.iconBg, border: `1px solid ${a.tagBorder}` }} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl">
-                  <Icon className="h-5 w-5" style={{ color: a.tagText }} />
-                </div>
-                <h3 className="text-sm font-bold text-white">{group.title}</h3>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {group.items.map((item) => (
-                    <Tag key={item} accent={group.accent}>{item}</Tag>
-                  ))}
-                </div>
+                {/* header */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      style={{ background: a.iconBg, border: `1px solid ${a.tagBorder}` }}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                    >
+                      <Icon className="h-5 w-5" style={{ color: a.tagText }} />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-white">{venture.name}</h3>
+                      <p className="text-xs font-medium" style={{ color: a.tagText }}>
+                        {venture.role} · {venture.period}
+                      </p>
+                    </div>
+                  </div>
+                  {venture.link && (
+                  <a
+                      href = {venture.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="shrink-0 rounded-full border border-white/10 bg-white/5 p-1.5 transition hover:border-emerald-300/30"
+                    >
+                      <ArrowUpRight className="h-3.5 w-3.5 text-zinc-400" />
+                </a>
+                                    )}
               </div>
-            );
-          })}
-        </div>
-      </section>
 
-      {/* ── leadership ── */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
-        <div className="overflow-hidden rounded-2xl border border-emerald-300/15 bg-gradient-to-br from-emerald-300/8 to-white/[0.03] p-7 md:p-10">
-          <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-start">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-400/60">Leadership</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Beyond the code.</h2>
-              <p className="mt-3 text-sm leading-7 text-zinc-400">
-                Experience leading recruiting operations, supporting residential communities, and teaching security-focused programming labs.
-              </p>
+            {/* description */ }
+            <p className="text-sm leading-7 text-zinc-400">{venture.description}</p>
+
+            {/* bullets */ }
+            <ul className="space-y-2">
+              {venture.bullets.map((bullet) => (
+                <li key={bullet} className="flex items-start gap-2.5 text-xs leading-6 text-zinc-400">
+                  <span
+                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
+                    style={{ background: a.tagText }}
+                  />
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+
+            {/* tags */ }
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {venture.tags.map((tag) => (
+                <Tag key={tag} accent={venture.accent}>{tag}</Tag>
+              ))}
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[
-                { title: "Vice President of Operations", body: "Built a recruiting pipeline for 80+ applicants for the Husky Quantitative Group — the first student-run quant fund at UConn." },
-                { title: "Resident Assistant", body: "Managed community programming and resident engagement for 100+ residents across 5 semesters. Recipient of the North Shining Star (Highest Honor) and voted most dependable RA on staff of 43." },
-                { title: "Teaching Assistant", body: "Led labs for 100+ students on hardware and software security practices and offensive attacks. Graded labs and provided feedback.", span: true },
-              ].map(({ title, body, span }) => (
-                <div key={title} className={`rounded-xl border border-white/8 bg-black/20 p-4 ${span ? "sm:col-span-2" : ""}`}>
-                  <h3 className="text-sm font-bold text-white">{title}</h3>
-                  <p className="mt-2 text-xs leading-6 text-zinc-400">{body}</p>
-                </div>
+                    </motion.div>
+        );
+                })}
+      </div>
+    </section>
+
+
+
+
+
+  {/* ── skills ── */ }
+  <section id="skills" className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
+    <SectionHeading eyebrow="Toolkit" title="A technical stack built around secure systems." />
+
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {skillGroups.map((group) => {
+        const Icon = group.icon;
+        const a = ACCENTS[group.accent];
+        return (
+          <div
+            key={group.title}
+            style={{ border: `1px solid ${a.tagBorder}`, background: a.tag }}
+            className="rounded-2xl p-5 backdrop-blur"
+          >
+            <div style={{ background: a.iconBg, border: `1px solid ${a.tagBorder}` }} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl">
+              <Icon className="h-5 w-5" style={{ color: a.tagText }} />
+            </div>
+            <h3 className="text-sm font-bold text-white">{group.title}</h3>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {group.items.map((item) => (
+                <Tag key={item} accent={group.accent}>{item}</Tag>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        );
+      })}
+    </div>
+  </section>
 
-      {/* ── contact footer ── */}
-      <footer id="contact" className="relative z-10 mx-auto max-w-7xl px-6 pb-10 pt-8 md:px-10">
-        <div className="flex flex-col gap-5 border-t border-white/8 pt-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-white">Let's build something secure.</h2>
-            <p className="mt-1 text-xs text-zinc-500">
-              Open to cybersecurity, AI security, embedded systems, and research opportunities.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2.5 text-xs">
-            {[
-              { href: "mailto:masonmmoore1@gmail.com", icon: Mail, label: "Email", accent: "green" },
-              { href: "https://github.com/M-moore1", icon: FaGithub, label: "GitHub", accent: "teal", external: true },
-              { href: "https://linkedin.com/in/masonmoore1", icon: FaLinkedin, label: "LinkedIn", accent: "sky", external: true },
-            ].map(({ href, icon: Icon, label, accent, external }) => {
-              const a = ACCENTS[accent];
-              return (
-                <a
-                  key={label}
-                  href={href}
-                  {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-                  style={{ border: `1px solid ${a.tagBorder}`, color: a.tagText, background: a.tag }}
-                  className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 transition hover:brightness-110"
-                >
-                  <Icon className="h-3.5 w-3.5" /> {label}
-                </a>
-              );
-            })}
-          </div>
+  {/* ── leadership ── */ }
+  <section className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:px-10">
+    <div className="overflow-hidden rounded-2xl border border-emerald-300/15 bg-gradient-to-br from-emerald-300/8 to-white/[0.03] p-7 md:p-10">
+      <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-start">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-400/60">Leadership</p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Beyond the code.</h2>
+          <p className="mt-3 text-sm leading-7 text-zinc-400">
+            Experience leading recruiting operations, supporting residential communities, and teaching security-focused programming labs.
+          </p>
         </div>
-      </footer>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {[
+            { title: "Vice President of Operations", body: "Built a recruiting pipeline for 80+ applicants for the Husky Quantitative Group — the first student-run quant fund at UConn." },
+            { title: "Resident Assistant", body: "Managed community programming and resident engagement for 100+ residents across 5 semesters. Recipient of the North Shining Star (Highest Honor) and voted most dependable RA on staff of 43." },
+            { title: "Teaching Assistant", body: "Led labs for 100+ students on hardware and software security practices and offensive attacks. Graded labs and provided feedback.", span: true },
+          ].map(({ title, body, span }) => (
+            <div key={title} className={`rounded-xl border border-white/8 bg-black/20 p-4 ${span ? "sm:col-span-2" : ""}`}>
+              <h3 className="text-sm font-bold text-white">{title}</h3>
+              <p className="mt-2 text-xs leading-6 text-zinc-400">{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
 
-    </main>
+  {/* ── contact footer ── */ }
+  <footer id="contact" className="relative z-10 mx-auto max-w-7xl px-6 pb-10 pt-8 md:px-10">
+    <div className="flex flex-col gap-5 border-t border-white/8 pt-8 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 className="text-xl font-bold text-white">Let's build something secure.</h2>
+        <p className="mt-1 text-xs text-zinc-500">
+          Open to cybersecurity, AI security, embedded systems, and research opportunities.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2.5 text-xs">
+        {[
+          { href: "mailto:masonmmoore1@gmail.com", icon: Mail, label: "Email", accent: "green" },
+          { href: "https://github.com/M-moore1", icon: FaGithub, label: "GitHub", accent: "teal", external: true },
+          { href: "https://linkedin.com/in/masonmoore1", icon: FaLinkedin, label: "LinkedIn", accent: "sky", external: true },
+        ].map(({ href, icon: Icon, label, accent, external }) => {
+          const a = ACCENTS[accent];
+          return (
+            <a
+              key={label}
+              href={href}
+              {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+              style={{ border: `1px solid ${a.tagBorder}`, color: a.tagText, background: a.tag }}
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 transition hover:brightness-110"
+            >
+              <Icon className="h-3.5 w-3.5" /> {label}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </footer>
+
+    </main >
   );
 }
