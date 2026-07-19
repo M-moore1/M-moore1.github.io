@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  PERSONAL PORTFOLIO — single-file website
+  ============================================================================
+  Everything (structure, styling, behavior) lives in this one file so you can
+  open it anywhere and edit it directly. The file is organized top-to-bottom:
+
+     1. <head>   → page title, fonts, and ALL styling (inside <style>)
+     2. <body>   → the visible content, section by section
+     3. <script> → all the interactivity (cursor, animations, menu, etc.)
+
+  HOW TO EDIT YOUR CONTENT (the quick version):
+     • Text you'll want to change is plain text between HTML tags.
+     • Search this file for "YOUR NAME", "you@email.com", "Your City",
+       "Company / Organization", and "Placeholder" — those mark every spot
+       that's meant to be replaced.
+     • Colors, fonts, and spacing are controlled in the ":root" block near the
+       top of the <style> section (labeled "TOKENS").
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Browser tab title. CHANGE "YOUR NAME" to your name. -->
+<title>YOUR NAME — Portfolio</title>
+
+<!-- Loads the three fonts used on the page from Google Fonts:
+     Syne (big display headings), Space Grotesk (body text), JetBrains Mono
+     (the small "code-style" labels). Requires an internet connection. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================================
+   TOKENS  —  THE CONTROL PANEL FOR THE WHOLE SITE
+   ----------------------------------------------------------------------------
+   These are reusable variables. Change a value here once and it updates
+   everywhere that variable is used. This is the safest place to customize the
+   look without touching the layout.
+   ============================================================================ */
+:root{
+  /* --- Background & surface colors (dark theme) --- */
+  --bg:#08080e;              /* page background (near-black)                    */
+  --bg-2:#0c0c15;            /* slightly lighter background, used in gradients  */
+  --panel:#12121d;           /* cards / boxes background                        */
+  --panel-2:#181826;         /* inner elements inside cards (chips, thumbs)     */
+  --line:rgba(255,255,255,.08);        /* faint hairline borders               */
+  --line-strong:rgba(255,255,255,.16); /* slightly stronger borders            */
+
+  /* --- Text colors --- */
+  --text:#ECECF4;            /* main text (near-white)                          */
+  --muted:#8a8aa6;           /* secondary/paragraph text (grey-lavender)        */
+  --faint:#5c5c78;           /* labels, captions, least-important text          */
+
+  /* --- The bright accent palette (the "pop" colors) --- */
+  --cyan:#22D3EE;            /* accent used on Home + Projects sections         */
+  --pink:#FF2D9B;            /* accent used on the About section                */
+  --violet:#8B5CF6;          /* accent used on the Experience section           */
+  --lime:#B4FF39;            /* accent used on the Contact section              */
+  --amber:#FFB020;           /* spare accent (not assigned to a section)        */
+
+  /* --- The "live" accent. JavaScript rewrites these two values as you scroll,
+         so the current section's color flows into buttons, glows, borders,
+         the spotlight, etc. Start value = cyan (the Home section). --- */
+  --accent:var(--cyan);
+  --accent-rgb:34,211,238;   /* same color as RGB numbers, for see-through glows */
+
+  /* --- Font assignments --- */
+  --display:'Syne',sans-serif;         /* large headings                       */
+  --body:'Space Grotesk',sans-serif;   /* normal paragraph text                */
+  --mono:'JetBrains Mono',monospace;   /* small "code-style" labels & dates     */
+
+  --maxw:1180px;                       /* max content width before it stops
+                                          stretching on wide screens           */
+  --ease:cubic-bezier(.2,.7,.2,1);     /* the shared animation curve            */
+}
+
+/* --- Baseline reset: remove default spacing so our numbers are predictable --- */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}          /* nav links glide instead of jumping     */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  line-height:1.6;
+  overflow-x:hidden;                  /* never allow sideways scrolling         */
+  -webkit-font-smoothing:antialiased;
+  cursor:auto;
+}
+
+/* ============================================================================
+   AMBIENT BACKGROUND  —  the three fixed layers behind everything
+   ----------------------------------------------------------------------------
+   These sit at negative z-index so they're always behind your content.
+   ============================================================================ */
+
+/* Layer 1: the faint grid of squares. The "mask-image" fades it out toward
+   the bottom so it doesn't compete with the text. */
+.bg-grid{
+  position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+  background-size:52px 52px;          /* grid cell size — bigger = wider grid   */
+  mask-image:radial-gradient(120% 120% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* Layer 2: soft colored clouds in the corners for depth. */
+.bg-glow{
+  position:fixed; inset:0; z-index:-3; pointer-events:none;
+  background:
+    radial-gradient(60% 45% at 12% 8%, rgba(34,211,238,.14), transparent 60%),  /* cyan top-left   */
+    radial-gradient(50% 45% at 92% 22%, rgba(255,45,155,.12), transparent 60%), /* pink top-right  */
+    radial-gradient(60% 60% at 50% 110%, rgba(139,92,246,.14), transparent 60%);/* violet bottom   */
+}
+
+/* Layer 3: the spotlight that follows your cursor (moved by JavaScript).
+   Its color is the live --accent, so it changes per section. */
+.spotlight{
+  position:fixed; top:0; left:0; z-index:-1; width:640px; height:640px;
+  margin:-320px 0 0 -320px; pointer-events:none;
+  background:radial-gradient(circle, rgba(var(--accent-rgb),.10) 0%, transparent 62%);
+  transition:background .6s var(--ease);
+  will-change:transform;
+}
+
+/* ============================================================================
+   CUSTOM CURSOR  —  the small dot + the trailing ring
+   ----------------------------------------------------------------------------
+   Positioned by JavaScript. Automatically hidden on touch devices (phones).
+   ============================================================================ */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-dot{width:6px;height:6px;background:var(--accent);transition:background .3s var(--ease)}
+.cursor-ring{width:34px;height:34px;border:1px solid rgba(var(--accent-rgb),.6);transition:width .25s var(--ease),height .25s var(--ease),border-color .3s,background .25s}
+.cursor-ring.hover{width:56px;height:56px;background:rgba(var(--accent-rgb),.08)} /* ring grows over links */
+@media (hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}     /* off on touchscreens   */
+
+/* ============================================================================
+   DATA-SPINE NAV  —  the vertical navigation rail on the LEFT (desktop only)
+   ----------------------------------------------------------------------------
+   Each link has a "node" (the dot) and a "txt" (the label that slides in on
+   hover). JavaScript adds the "active" class to whichever section you're in.
+   ============================================================================ */
+.spine{
+  position:fixed; left:34px; top:50%; transform:translateY(-50%); z-index:60;
+  display:flex; flex-direction:column; gap:2px;
+}
+.spine::before{                        /* the thin vertical line behind the dots */
+  content:""; position:absolute; left:4px; top:6px; bottom:6px; width:1px;
+  background:linear-gradient(var(--line-strong),transparent);
+}
+.spine a{
+  position:relative; display:flex; align-items:center; gap:14px;
+  padding:9px 0 9px 22px; text-decoration:none; color:var(--faint);
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+}
+.spine a .node{                        /* the little circle marker               */
+  position:absolute; left:0; width:9px; height:9px; border-radius:50%;
+  border:1px solid var(--faint); background:var(--bg);
+  transition:all .3s var(--ease);
+}
+.spine a .txt{opacity:0; transform:translateX(-6px); transition:all .3s var(--ease)} /* hidden until hover/active */
+.spine a:hover .txt,.spine a.active .txt{opacity:1; transform:translateX(0)}
+.spine a:hover .node{border-color:var(--accent)}
+.spine a.active{color:var(--text)}
+.spine a.active .node{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 4px rgba(var(--accent-rgb),.16)}
+
+/* --- Mobile top bar (shown INSTEAD of the spine on narrow screens) --- */
+.topbar{
+  position:fixed; top:0; left:0; right:0; z-index:60; display:none; /* revealed via media query below */
+  align-items:center; justify-content:space-between;
+  padding:14px 20px; background:rgba(8,8,14,.72); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .brand{font-family:var(--mono); font-size:13px; letter-spacing:.1em}
+.topbar .brand b{color:var(--accent)}
+.menu-btn{background:none;border:1px solid var(--line-strong);color:var(--text);
+  font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:8px;cursor:pointer}
+
+/* --- The full-screen menu overlay that opens when you tap MENU --- */
+.mobile-menu{
+  position:fixed; inset:0; z-index:59; background:rgba(8,8,14,.97); backdrop-filter:blur(6px);
+  display:none; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+}
+.mobile-menu.open{display:flex}       /* JavaScript toggles this "open" class    */
+.mobile-menu a{color:var(--text);text-decoration:none;font-family:var(--display);
+  font-weight:700;font-size:2rem;padding:10px}
+.mobile-menu a span{color:var(--accent);font-family:var(--mono);font-size:.9rem;margin-right:12px}
+
+/* ============================================================================
+   LAYOUT HELPERS  —  reused by every section
+   ============================================================================ */
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px}  /* centers content, adds side padding */
+section{position:relative; padding:120px 0}                  /* vertical breathing room per section */
+
+/* The small "01 — About" style label above each heading. */
+.eyebrow{
+  font-family:var(--mono); font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--accent); display:inline-flex; align-items:center; gap:10px; margin-bottom:22px;
+}
+.eyebrow::before{content:""; width:26px; height:1px; background:var(--accent)} /* the little dash before it */
+
+/* The big section headings. Wrap words in <em> to color them with the accent. */
+h2.title{
+  font-family:var(--display); font-weight:800; line-height:1.02;
+  font-size:clamp(2.2rem,5.5vw,3.9rem); letter-spacing:-.02em; margin-bottom:14px;
+}
+h2.title em{font-style:normal; color:var(--accent)}
+
+.lead{color:var(--muted); font-size:1.05rem; max-width:60ch}  /* intro paragraph under a heading */
+
+/* ============================================================================
+   HERO  —  the full-screen opening section (id="home")
+   ============================================================================ */
+.hero{min-height:100vh; display:flex; align-items:center; padding:110px 0 90px}
+
+/* The "Available for..." pill with the pulsing green dot. */
+.hero .status{
+  font-family:var(--mono); font-size:12.5px; letter-spacing:.12em; color:var(--muted);
+  display:inline-flex; align-items:center; gap:10px; margin-bottom:30px;
+  padding:8px 14px; border:1px solid var(--line); border-radius:100px; background:var(--panel);
+}
+.hero .status .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);
+  box-shadow:0 0 0 0 rgba(180,255,57,.5); animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(180,255,57,.5)}70%{box-shadow:0 0 0 9px rgba(180,255,57,0)}100%{box-shadow:0 0 0 0 rgba(180,255,57,0)}}
+
+/* The giant name. */
+.hero h1{
+  font-family:var(--display); font-weight:800; letter-spacing:-.03em; line-height:.92;
+  font-size:clamp(3.4rem,12vw,9rem); margin:0 0 6px;
+}
+/* Each name line slides up from below on page load (the "rise" animation). */
+.hero h1 .line{display:block; overflow:hidden}
+.hero h1 .line > span{display:inline-block; transform:translateY(110%); animation:rise .9s var(--ease) forwards}
+.hero h1 .line:nth-child(2) > span{animation-delay:.09s}   /* second line follows slightly later */
+@keyframes rise{to{transform:translateY(0)}}
+
+/* The animated rainbow gradient applied to the second line of the name. */
+.grad{
+  background:linear-gradient(100deg,var(--cyan),var(--pink) 42%,var(--violet) 72%,var(--lime));
+  background-size:220% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation:shift 9s ease-in-out infinite;                 /* slowly slides the gradient */
+}
+@keyframes shift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* The "$ Machine Learning Engineer" line — the role text is typed by JavaScript. */
+.hero .role{
+  font-family:var(--mono); font-size:clamp(1rem,2.4vw,1.5rem); color:var(--text);
+  margin:22px 0 26px; min-height:1.6em;
+}
+.hero .role .prefix{color:var(--faint)}                    /* the "$" prompt symbol */
+.hero .role .rot{color:var(--accent); border-right:2px solid var(--accent); padding-right:4px;
+  animation:caret 1s step-end infinite}                    /* the blinking cursor bar */
+@keyframes caret{50%{border-color:transparent}}
+
+.hero .blurb{max-width:52ch; color:var(--muted); font-size:1.08rem; margin-bottom:38px} /* one-line tagline */
+
+/* --- Buttons (shared by hero + contact form) --- */
+.cta-row{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+.btn{
+  font-family:var(--mono); font-size:13px; letter-spacing:.06em; text-decoration:none;
+  padding:15px 26px; border-radius:12px; display:inline-flex; align-items:center; gap:10px;
+  border:1px solid transparent; transition:transform .25s var(--ease),background .25s,box-shadow .25s,color .25s;
+}
+.btn:hover{transform:translateY(-3px)}                     /* lift on hover */
+.btn-primary{background:var(--accent); color:#07070c; font-weight:600;      /* solid filled button */
+  box-shadow:0 10px 34px -12px rgba(var(--accent-rgb),.7)}
+.btn-primary:hover{box-shadow:0 16px 42px -12px rgba(var(--accent-rgb),.9)}
+.btn-ghost{border-color:var(--line-strong); color:var(--text); background:rgba(255,255,255,.02)} /* outline button */
+.btn-ghost:hover{border-color:var(--accent); color:var(--accent)}
+
+/* The row of stats pinned near the bottom of the hero. */
+.hero-meta{
+  position:absolute; bottom:38px; left:0; right:0;
+  display:flex; gap:38px; flex-wrap:wrap; color:var(--faint); font-family:var(--mono); font-size:12px;
+}
+.hero-meta b{color:var(--text); font-weight:600}
+
+/* The vertical "SCROLL" hint in the bottom-right corner. */
+.scroll-hint{position:absolute; right:32px; bottom:34px; writing-mode:vertical-rl;
+  font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:var(--faint);
+  display:flex; align-items:center; gap:12px}
+.scroll-hint .bar{width:1px; height:44px; background:linear-gradient(var(--accent),transparent);
+  animation:drop 2s ease-in-out infinite}
+@keyframes drop{0%,100%{transform:scaleY(.3);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+
+/* ============================================================================
+   ABOUT  —  two-column section (id="about")
+   ----------------------------------------------------------------------------
+   Left column = your written bio. Right column = the "panel" with your
+   toolbox chips and animated stat counters.
+   ============================================================================ */
+.about-grid{display:grid; grid-template-columns:1.35fr .85fr; gap:56px; align-items:start; margin-top:40px}
+.about-copy p{color:var(--muted); margin-bottom:18px; font-size:1.05rem}
+.about-copy p b{color:var(--text); font-weight:600}                          /* bold words inside bio */
+.about-copy .sig{font-family:var(--display); font-weight:700; color:var(--text); font-size:1.15rem; margin-top:6px} /* signature line */
+
+/* A generic "panel" box — reused for the toolbox card. */
+.panel{background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:26px}
+.panel h3{font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint); margin-bottom:18px}                                    /* mini-headings inside panel */
+
+/* The pill-shaped skill tags. Add/remove <span class="chip"> items to edit. */
+.stack{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:26px}
+.chip{font-family:var(--mono); font-size:12.5px; padding:8px 13px; border-radius:9px;
+  border:1px solid var(--line); background:var(--panel-2); color:var(--muted); transition:all .25s var(--ease)}
+.chip:hover{border-color:var(--accent); color:var(--accent); transform:translateY(-2px)}
+
+/* The 2x2 grid of counting numbers. The number itself lives in data-count (see HTML). */
+.stats{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:26px}
+.stat .num{font-family:var(--display); font-weight:800; font-size:2.4rem; color:var(--accent); line-height:1}
+.stat .lbl{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); margin-top:6px}
+
+/* ============================================================================
+   EXPERIENCE  —  vertical timeline (id="experience")
+   ----------------------------------------------------------------------------
+   Each ".tl-item" is one entry. Copy/paste a whole ".tl-item" block in the
+   HTML to add another job/milestone.
+   ============================================================================ */
+.timeline{margin-top:52px; position:relative; padding-left:34px}
+.timeline::before{content:""; position:absolute; left:6px; top:6px; bottom:6px; width:1px;   /* the vertical line */
+  background:linear-gradient(var(--accent),var(--violet),transparent)}
+.tl-item{position:relative; padding:0 0 46px; }
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:""; position:absolute; left:-33px; top:6px; width:13px; height:13px; border-radius:50%; /* the dot */
+  background:var(--bg); border:2px solid var(--accent); transition:all .3s var(--ease)}
+.tl-item:hover::before{background:var(--accent); box-shadow:0 0 0 6px rgba(var(--accent-rgb),.14)}
+.tl-item .date{font-family:var(--mono); font-size:12px; letter-spacing:.08em; color:var(--accent)}
+.tl-item h3{font-family:var(--display); font-weight:700; font-size:1.5rem; margin:6px 0 2px}   /* role title */
+.tl-item .org{color:var(--muted); font-size:.98rem; margin-bottom:12px}                        /* company line */
+.tl-item .org b{color:var(--text)}
+.tl-item p{color:var(--muted); max-width:64ch; font-size:1rem}                                 /* description  */
+.tl-tags{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}                               /* small tags   */
+.tl-tags span{font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:7px;
+  border:1px solid var(--line); color:var(--faint)}
+
+/* ============================================================================
+   PROJECTS  —  card grid (id="projects")
+   ----------------------------------------------------------------------------
+   ".card"      = a normal project card.
+   ".card.feat" = the wide featured card at the top (image + text side by side).
+   Cards with data-tilt tilt in 3D toward the cursor (handled in JavaScript).
+   ============================================================================ */
+.proj-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:22px; margin-top:52px}      /* 2 columns */
+.card{
+  position:relative; background:var(--panel); border:1px solid var(--line); border-radius:20px;
+  padding:30px; overflow:hidden; text-decoration:none; color:inherit; display:flex; flex-direction:column;
+  min-height:290px; transform-style:preserve-3d; transition:border-color .3s, box-shadow .3s;
+  will-change:transform;
+}
+.card.feat{grid-column:1 / -1; min-height:auto; flex-direction:row; gap:34px; align-items:center} /* spans both columns */
+
+/* The glow that follows the cursor inside a card (position set by JavaScript via --mx/--my). */
+.card::after{content:""; position:absolute; inset:0; border-radius:20px; opacity:0; transition:opacity .35s;
+  background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%), rgba(var(--accent-rgb),.14), transparent 60%);}
+.card:hover{border-color:rgba(var(--accent-rgb),.5); box-shadow:0 24px 60px -30px rgba(var(--accent-rgb),.5)}
+.card:hover::after{opacity:1}
+
+.card .idx{font-family:var(--mono); font-size:12px; color:var(--faint); letter-spacing:.1em}   /* "// 01" label */
+.card h3{font-family:var(--display); font-weight:700; font-size:1.55rem; margin:14px 0 10px; letter-spacing:-.01em}
+.card.feat h3{font-size:2.1rem}                                                                /* bigger on featured */
+.card p{color:var(--muted); font-size:1rem; margin-bottom:20px}
+.card .tags{display:flex; gap:8px; flex-wrap:wrap; margin-top:auto}                            /* tech tags   */
+.card .tags span{font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:7px;
+  background:var(--panel-2); color:var(--muted); border:1px solid var(--line)}
+.card .go{font-family:var(--mono); font-size:12.5px; color:var(--accent); display:inline-flex; align-items:center; gap:8px; margin-top:18px}
+.card .go .arw{transition:transform .3s var(--ease)}                                           /* the ↗ arrow */
+.card:hover .go .arw{transform:translate(4px,-4px)}
+
+/* The decorative "image" area on the featured card (a gradient + grid placeholder).
+   Replace with a real <img> when you have a screenshot. */
+.card .thumb{
+  flex:0 0 40%; align-self:stretch; border-radius:14px; min-height:220px;
+  background:
+    radial-gradient(120% 120% at 20% 10%, rgba(var(--accent-rgb),.3), transparent 55%),
+    linear-gradient(135deg,var(--panel-2),var(--bg-2));
+  border:1px solid var(--line); position:relative; overflow:hidden;
+}
+.card .thumb::before{content:""; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:26px 26px; mask-image:radial-gradient(70% 70% at 30% 20%,#000,transparent)}
+.card .thumb .tag{position:absolute; bottom:14px; left:14px; font-family:var(--mono);
+  font-size:11px; color:var(--accent); letter-spacing:.14em}
+.card .feat-body{flex:1}
+
+/* ============================================================================
+   CONTACT  —  closing section (id="contact")
+   ============================================================================ */
+.contact{text-align:center}
+.contact .big{                         /* the huge "Let's build something together." line */
+  font-family:var(--display); font-weight:800; letter-spacing:-.03em; line-height:1;
+  font-size:clamp(2.6rem,9vw,6.4rem); margin:14px 0 24px;
+}
+.contact .big a{color:var(--accent); text-decoration:none; position:relative; white-space:nowrap}
+.contact .big a::after{content:""; position:absolute; left:0; right:0; bottom:.06em; height:3px;  /* underline that draws in on hover */
+  background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .4s var(--ease)}
+.contact .big a:hover::after{transform:scaleX(1)}
+.contact .lead{margin:0 auto 40px}
+
+/* The contact form fields. NOTE: the form is a visual placeholder — see the
+   JavaScript at the bottom for what "Send" currently does. */
+.form{max-width:560px; margin:0 auto; text-align:left; display:grid; gap:16px}
+.form .row{display:grid; grid-template-columns:1fr 1fr; gap:16px}          /* name + email side by side */
+.field label{display:block; font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--faint); margin-bottom:8px}
+.field input,.field textarea{
+  width:100%; background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px; color:var(--text); font-family:var(--body); font-size:1rem; transition:border-color .25s, box-shadow .25s;
+}
+.field textarea{min-height:130px; resize:vertical}
+.field input:focus,.field textarea:focus{outline:none; border-color:var(--accent);        /* accent ring on focus */
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb),.16)}
+.form .btn{justify-content:center; width:100%}
+
+/* The row of social links below the form. */
+.socials{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:44px}
+.socials a{font-family:var(--mono); font-size:13px; text-decoration:none; color:var(--muted);
+  padding:12px 20px; border:1px solid var(--line); border-radius:100px; transition:all .25s var(--ease)}
+.socials a:hover{color:var(--accent); border-color:var(--accent); transform:translateY(-3px)}
+
+/* ============================================================================
+   FOOTER
+   ============================================================================ */
+footer{border-top:1px solid var(--line); padding:34px 0; margin-top:40px}
+footer .wrap{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px}
+footer p{font-family:var(--mono); font-size:12px; color:var(--faint)}
+footer .top{font-family:var(--mono); font-size:12px; color:var(--muted); text-decoration:none; cursor:pointer}
+footer .top:hover{color:var(--accent)}
+
+/* ============================================================================
+   REVEAL  —  the fade-and-slide-up effect as sections scroll into view
+   ----------------------------------------------------------------------------
+   Any element given class "reveal" starts hidden; JavaScript adds "in" when it
+   enters the screen. The d1–d4 classes just stagger the timing.
+   ============================================================================ */
+.reveal{opacity:0; transform:translateY(28px); transition:opacity .7s var(--ease), transform .7s var(--ease)}
+.reveal.in{opacity:1; transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
+
+/* ============================================================================
+   RESPONSIVE  —  adjustments for smaller screens
+   ----------------------------------------------------------------------------
+   Rules apply when the screen is AT MOST the listed width. This is where the
+   left spine hides, the top bar appears, and multi-column layouts stack.
+   ============================================================================ */
+@media (max-width:1080px){.spine{left:20px}}                     /* nudge spine in a bit  */
+@media (max-width:900px){                                        /* tablet / phone        */
+  .spine{display:none}                                           /* hide the side rail    */
+  .topbar{display:flex}                                          /* show the top bar      */
+  section{padding:88px 0}
+  .hero{padding-top:120px}
+  .about-grid{grid-template-columns:1fr; gap:34px}               /* about stacks vertically */
+  .proj-grid{grid-template-columns:1fr}                          /* one project per row   */
+  .card.feat{flex-direction:column; align-items:stretch}        /* featured card stacks  */
+  .card .thumb{flex-basis:auto; width:100%; min-height:180px}
+  .hero-meta{position:static; margin-top:44px}                   /* un-pin hero stats     */
+  .scroll-hint{display:none}
+}
+@media (max-width:560px){                                        /* small phones          */
+  .wrap{padding:0 20px}
+  .form .row{grid-template-columns:1fr}                          /* name/email stack      */
+  .stats{grid-template-columns:1fr 1fr}
+}
+
+/* Accessibility: if the visitor's device is set to reduce motion, turn OFF all
+   animation and the tilt/spotlight effects so nothing moves. */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; scroll-behavior:auto}
+  .reveal{opacity:1; transform:none; transition:none}
+  .hero h1 .line > span{transform:none}
+}
+
+/* ============================================================================
+   HIDDEN TERMINAL / CTF  —  the cybersecurity easter-egg layer
+   ----------------------------------------------------------------------------
+   None of this is part of the normal page. It stays hidden until the visitor
+   opens the terminal (press the ` / ~ key anywhere, or click the footer hook).
+   The whole puzzle is 100% client-side and sandboxed — the "login" talks to a
+   FAKE in-memory database, so the SQL-injection challenge can never touch a
+   real backend. See the CTF <script> at the very bottom for the logic.
+   ============================================================================ */
+
+/* The faint footer hook — makes the terminal DISCOVERABLE without shouting. */
+.term-hook{font-family:var(--mono); font-size:12px; color:var(--faint);
+  background:none; border:none; cursor:pointer; letter-spacing:.04em; transition:color .25s}
+.term-hook:hover{color:var(--lime)}
+.term-hook .blink{color:var(--lime); animation:tblink 1.1s step-end infinite} /* pulsing cursor */
+@keyframes tblink{50%{opacity:0}}
+
+/* The terminal itself — a console docked to the bottom of the screen. */
+.term{
+  position:fixed; left:0; right:0; bottom:0; z-index:200; height:min(62vh,560px);
+  background:rgba(6,8,10,.97); backdrop-filter:blur(10px);
+  border-top:1px solid rgba(180,255,57,.35);
+  box-shadow:0 -30px 80px -20px rgba(0,0,0,.85);
+  display:flex; flex-direction:column; transform:translateY(100%);   /* off-screen by default */
+  transition:transform .4s var(--ease); font-family:var(--mono);
+}
+.term.open{transform:translateY(0)}                                  /* JS toggles ".open" */
+.term-bar{display:flex; align-items:center; gap:10px; padding:10px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08); color:var(--faint); font-size:12px}
+.term-bar .dots{display:flex; gap:7px}                               /* the mac-style window dots */
+.term-bar .dots i{width:11px; height:11px; border-radius:50%; display:block}
+.term-bar .dots i:nth-child(1){background:#ff5f57}
+.term-bar .dots i:nth-child(2){background:#febc2e}
+.term-bar .dots i:nth-child(3){background:#28c840}
+.term-bar .ttl{color:var(--muted)}
+.term-bar .x{margin-left:auto; cursor:pointer; color:var(--faint); background:none; border:none; font-family:var(--mono)}
+.term-bar .x:hover{color:var(--text)}
+.term-body{flex:1; overflow-y:auto; padding:16px; font-size:13.5px; line-height:1.7; color:#c7d6bd}
+.term-body .ln{white-space:pre-wrap; word-break:break-word}
+.term-body a{color:var(--cyan)}
+/* color helper classes used when printing terminal output */
+.term-body .g{color:var(--lime)} .term-body .c{color:var(--cyan)} .term-body .p{color:var(--pink)}
+.term-body .v{color:var(--violet)} .term-body .a{color:var(--amber)} .term-body .dim{color:var(--faint)}
+.term-in{display:flex; align-items:center; gap:8px; padding:12px 16px; border-top:1px solid rgba(255,255,255,.08)}
+.term-in .prompt{color:var(--lime); font-size:13.5px; white-space:nowrap}   /* the "$" prompt */
+.term-in input{flex:1; background:none; border:none; outline:none; color:#eaffea;
+  font-family:var(--mono); font-size:13.5px}
+
+/* Shared modal shell — used for BOTH the login portal and the final secret panel. */
+.cyber-modal{position:fixed; inset:0; z-index:210; display:none; align-items:center;
+  justify-content:center; padding:24px; background:rgba(4,5,8,.74); backdrop-filter:blur(6px)}
+.cyber-modal.open{display:flex}
+.cyber-box{width:min(460px,100%); max-height:88vh; overflow-y:auto; background:var(--panel);
+  border:1px solid rgba(180,255,57,.3); border-radius:16px; padding:30px; font-family:var(--mono);
+  position:relative; box-shadow:0 30px 90px -30px rgba(180,255,57,.4)}
+.cyber-box h4{font-family:var(--display); font-size:1.35rem; margin-bottom:6px; color:var(--text)}
+.cyber-box .sub{color:var(--faint); font-size:12px; margin-bottom:22px; line-height:1.5}
+.cyber-box label{display:block; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--faint); margin:0 0 7px}
+.cyber-box input{width:100%; background:var(--bg-2); border:1px solid var(--line); border-radius:9px;
+  padding:12px 14px; color:var(--text); font-family:var(--mono); margin-bottom:16px}
+.cyber-box input:focus{outline:none; border-color:var(--lime)}
+/* the live SQL "query preview" that shows the injection working in real time */
+.cyber-box .query{font-size:11px; color:var(--faint); word-break:break-all; margin-bottom:14px;
+  background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px 12px; line-height:1.6}
+.cyber-box .query b{color:var(--amber)}
+.cyber-box .msg{min-height:18px; font-size:12px; margin-bottom:14px}
+.cyber-box .msg.ok{color:var(--lime)} .cyber-box .msg.err{color:#ff6b6b}
+.cyber-box button.go{width:100%; background:var(--lime); color:#08120a; border:none; border-radius:9px;
+  padding:12px; font-family:var(--mono); font-weight:600; cursor:pointer}
+.cyber-box .close{position:absolute; top:14px; right:16px; cursor:pointer; color:var(--faint);
+  background:none; border:none; font-family:var(--mono); font-size:14px}
+.cyber-box .hint{font-size:11px; color:var(--faint); margin-top:14px; text-align:center}
+/* the final "secret" reveal */
+.secret .flag{color:var(--lime); background:var(--bg); border:1px dashed rgba(180,255,57,.5);
+  border-radius:8px; padding:10px; text-align:center; margin:16px 0; word-break:break-all; font-size:13px}
+.secret ul{list-style:none; margin:12px 0; display:grid; gap:10px}
+.secret li{background:var(--bg-2); border:1px solid var(--line); border-radius:10px; padding:12px 14px;
+  font-family:var(--body); color:var(--muted); font-size:.95rem}
+.secret li b{color:var(--text); font-family:var(--mono); font-size:.78rem; letter-spacing:.08em; display:block; margin-bottom:3px}
+</style>
+</head>
+<body>
+
+<!-- ==========================================================================
+     BREADCRUMB  (Stage 0 of the hidden CTF — for anyone who "views source")
+     Security folks read the source. Reward them. Decode the base64 below:
+     ========================================================================== -->
+<!-- Ymx1ZSB0ZWFtIHNsZWVwcy4gcmVkIHRlYW0gcmVhZHMgc291cmNlLiBwcmVzcyB0aGUgYmFja3RpY2sga2V5ICggYCBvciB+ICkgYW55d2hlcmUsIHRoZW4gdHlwZTogaGVscA== -->
+
+<!-- ==========================================================================
+     BACKGROUND & CURSOR ELEMENTS
+     These are empty on purpose — they're just canvases the CSS/JS draw onto.
+     ========================================================================== -->
+<div class="bg-glow"></div>       <!-- corner color clouds        -->
+<div class="bg-grid"></div>       <!-- faint grid                 -->
+<div class="spotlight" id="spotlight"></div>  <!-- cursor-following glow -->
+<div class="cursor-dot" id="cdot"></div>      <!-- custom cursor dot     -->
+<div class="cursor-ring" id="cring"></div>    <!-- custom cursor ring    -->
+
+<!-- ==========================================================================
+     MOBILE TOP BAR  (only visible on narrow screens)
+     "YOUR NAME" here is your brand mark. The MENU button opens the overlay.
+     ========================================================================== -->
+<div class="topbar">
+  <div class="brand">// <b>YOUR NAME</b></div>            <!-- ← your name / logo text -->
+  <button class="menu-btn" id="menuBtn">MENU</button>
+</div>
+
+<!-- The full-screen menu that the MENU button opens. Links mirror the spine nav. -->
+<nav class="mobile-menu" id="mobileMenu">
+  <a href="#about"><span>01</span>About</a>
+  <a href="#experience"><span>02</span>Experience</a>
+  <a href="#projects"><span>03</span>Projects</a>
+  <a href="#contact"><span>04</span>Contact</a>
+</nav>
+
+<!-- ==========================================================================
+     DESKTOP SPINE NAV  (the vertical rail on the left)
+     The data-accent on each link tells JavaScript which color that section
+     should turn the page. Keep these matched to the sections below.
+     ========================================================================== -->
+<nav class="spine" id="spine">
+  <a href="#home" data-accent="cyan"><span class="node"></span><span class="txt">Home</span></a>
+  <a href="#about" data-accent="pink"><span class="node"></span><span class="txt">About</span></a>
+  <a href="#experience" data-accent="violet"><span class="node"></span><span class="txt">Experience</span></a>
+  <a href="#projects" data-accent="cyan"><span class="node"></span><span class="txt">Projects</span></a>
+  <a href="#contact" data-accent="lime"><span class="node"></span><span class="txt">Contact</span></a>
+</nav>
+
+<!-- ==========================================================================
+     HERO SECTION  (id="home")  — the first thing visitors see
+     EDIT: the status pill, your name (YOUR / NAME), the tagline, the buttons,
+     and the three meta stats at the bottom.
+     ========================================================================== -->
+<section class="hero" id="home" data-accent="cyan">
+  <div class="wrap">
+
+    <!-- Availability pill. Change the text; the green dot pulses automatically. -->
+    <div class="status"><span class="dot"></span> Available for 2027 new-grad roles</div>
+
+    <!-- Your name, split across two lines. The second line gets the rainbow gradient.
+         Keep the nested <span> structure — it powers the slide-up animation. -->
+    <h1>
+      <span class="line"><span>YOUR</span></span>
+      <span class="line"><span class="grad">NAME</span></span>
+    </h1>
+
+    <!-- The typing "role" line. The starting word is here; the full rotating list
+         lives in the JavaScript (search for "const roles"). The "$" is decorative. -->
+    <div class="role">
+      <span class="prefix">$&nbsp;</span><span class="rot" id="rot">Machine Learning Engineer</span>
+    </div>
+
+    <!-- One-sentence tagline. -->
+    <p class="blurb">I build and break intelligent systems — placeholder tagline where you say, in one line, what you make and why it matters. Swap this for your own voice.</p>
+
+    <!-- The two call-to-action buttons. -->
+    <div class="cta-row">
+      <a href="#projects" class="btn btn-primary">View the work <span>→</span></a>
+      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+    </div>
+
+    <!-- Three quick facts pinned near the bottom of the hero. -->
+    <div class="hero-meta">
+      <span><b>Based in</b> Your City, ST</span>
+      <span><b>Focus</b> ML · Security · Systems</span>
+      <span><b>Open to</b> Full-time / Contract</span>
+    </div>
+  </div>
+
+  <!-- Decorative "SCROLL" hint, bottom-right. -->
+  <div class="scroll-hint"><span class="bar"></span>SCROLL</div>
+</section>
+
+<!-- ==========================================================================
+     ABOUT SECTION  (id="about")
+     LEFT  = your bio paragraphs (.about-copy)
+     RIGHT = toolbox chips + stat counters (.panel)
+     ========================================================================== -->
+<section id="about" data-accent="pink">
+  <div class="wrap">
+    <div class="eyebrow reveal">01 — About</div>
+    <!-- Heading. Text inside <em> gets the accent color. -->
+    <h2 class="title reveal d1">Engineer by craft,<br><em>builder by instinct.</em></h2>
+
+    <div class="about-grid">
+
+      <!-- ---- Left column: write your story here (2–3 paragraphs) ---- -->
+      <div class="about-copy reveal d2">
+        <p>This is your <b>about section</b> — a placeholder paragraph you'll replace with the story of who you are. Two or three tight paragraphs work best. Lead with what you do and the kind of problems you love.</p>
+        <p>Talk about how you got here, what you're obsessed with right now, and the through-line that connects your work. Keep it human — this is the part people actually read, so let some personality leak in.</p>
+        <p>Close with where you're headed and what you're looking for. Then sign off.</p>
+        <p class="sig">— Your Name</p>
+      </div>
+
+      <!-- ---- Right column: skills + stats ---- -->
+      <div class="reveal d3">
+        <div class="panel">
+
+          <!-- Toolbox: add or remove <span class="chip"> items freely. -->
+          <h3>Toolbox</h3>
+          <div class="stack">
+            <span class="chip">Python</span><span class="chip">PyTorch</span>
+            <span class="chip">TensorFlow</span><span class="chip">FastAPI</span>
+            <span class="chip">Docker</span><span class="chip">React</span>
+            <span class="chip">C / C++</span><span class="chip">SQL</span>
+            <span class="chip">AWS</span><span class="chip">Git</span>
+          </div>
+
+          <!-- A second row of chips for whatever you're up to now. -->
+          <h3>Currently</h3>
+          <div class="stack">
+            <span class="chip">Building things</span>
+            <span class="chip">Learning things</span>
+            <span class="chip">Shipping things</span>
+          </div>
+
+          <!-- Stat counters. The FINAL number goes in data-count="…".
+               The 0 between the tags is just the starting value JS animates from. -->
+          <div class="stats">
+            <div class="stat"><div class="num" data-count="12">0</div><div class="lbl">Projects shipped</div></div>
+            <div class="stat"><div class="num" data-count="4">0</div><div class="lbl">Years building</div></div>
+            <div class="stat"><div class="num" data-count="8">0</div><div class="lbl">Tools mastered</div></div>
+            <div class="stat"><div class="num" data-count="3">0</div><div class="lbl">Roles held</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     EXPERIENCE SECTION  (id="experience")
+     To add an entry, copy one whole <div class="tl-item reveal"> … </div> block.
+     Newest at the top.
+     ========================================================================== -->
+<section id="experience" data-accent="violet">
+  <div class="wrap">
+    <div class="eyebrow reveal">02 — Experience</div>
+    <h2 class="title reveal d1">Where I've <em>shipped.</em></h2>
+    <p class="lead reveal d2">Placeholder timeline — each entry is a role, project, or milestone. Replace the copy and reorder as needed.</p>
+
+    <div class="timeline">
+
+      <!-- ---- Timeline entry (repeat this block per job) ---- -->
+      <div class="tl-item reveal">
+        <div class="date">2025 — Present</div>                                  <!-- dates      -->
+        <h3>Your Most Recent Role</h3>                                          <!-- job title  -->
+        <div class="org"><b>Company / Organization</b> · City, ST</div>         <!-- employer   -->
+        <p>One or two sentences on what you owned and the impact you had. Numbers land harder than adjectives — mention scale, speed, or outcomes wherever you can.</p>
+        <div class="tl-tags"><span>Placeholder</span><span>Stack</span><span>Impact</span></div> <!-- tags -->
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="date">2024 — 2025</div>
+        <h3>Previous Role or Project</h3>
+        <div class="org"><b>Company / Organization</b> · City, ST</div>
+        <p>What you built, who it was for, and what changed because of it. Keep it to the highlights — this is a teaser, not a résumé dump.</p>
+        <div class="tl-tags"><span>Placeholder</span><span>Tooling</span><span>Result</span></div>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="date">2023 — 2024</div>
+        <h3>Earlier Experience</h3>
+        <div class="org"><b>Company / Organization</b> · City, ST</div>
+        <p>An earlier milestone that shows range or growth. Even coursework, research, or side projects belong here if they tell your story.</p>
+        <div class="tl-tags"><span>Placeholder</span><span>Skill</span><span>Outcome</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     PROJECTS SECTION  (id="projects")
+     • First card has class "feat" = the wide featured card with a thumbnail.
+     • The rest are standard cards.
+     • href="#" is a placeholder — point each to a repo, demo, or write-up.
+     • Keep data-tilt on a card if you want the 3D hover tilt.
+     ========================================================================== -->
+<section id="projects" data-accent="cyan">
+  <div class="wrap">
+    <div class="eyebrow reveal">03 — Projects</div>
+    <h2 class="title reveal d1">Selected <em>work.</em></h2>
+
+    <div class="proj-grid">
+
+      <!-- ---- FEATURED card (image + text). Swap the .thumb for a real <img>. ---- -->
+      <a href="#" class="card feat reveal" data-tilt>
+        <div class="thumb"><span class="tag">FEATURED</span></div>
+        <div class="feat-body">
+          <div class="idx">// FEATURED PROJECT</div>
+          <h3>Your Flagship Project</h3>
+          <p>This is the featured slot — reserve it for the one thing you most want people to see. Describe the problem, what you built, and the result in two or three sentences. Placeholder copy goes here.</p>
+          <div class="tags"><span>Python</span><span>PyTorch</span><span>FastAPI</span><span>Docker</span></div>
+          <span class="go">View case study <span class="arw">↗</span></span>
+        </div>
+      </a>
+
+      <!-- ---- Standard card (copy this block to add more projects) ---- -->
+      <a href="#" class="card reveal" data-tilt>
+        <div class="idx">// 01</div>                                <!-- project number -->
+        <h3>Project Two</h3>                                        <!-- project title  -->
+        <p>A short description of what this project does and why it's interesting. Swap in your own — one or two lines is plenty.</p>
+        <div class="tags"><span>Placeholder</span><span>Stack</span></div>   <!-- tech used -->
+        <span class="go">View project <span class="arw">↗</span></span>
+      </a>
+
+      <a href="#" class="card reveal d1" data-tilt>
+        <div class="idx">// 02</div>
+        <h3>Project Three</h3>
+        <p>Another placeholder card. The grid flexes automatically as you add more, so drop in as many as you like.</p>
+        <div class="tags"><span>Placeholder</span><span>Tooling</span></div>
+        <span class="go">View project <span class="arw">↗</span></span>
+      </a>
+
+      <a href="#" class="card reveal" data-tilt>
+        <div class="idx">// 03</div>
+        <h3>Project Four</h3>
+        <p>Describe a build, an experiment, or something you're proud of. Keep the tone consistent with the rest.</p>
+        <div class="tags"><span>Placeholder</span><span>Stack</span></div>
+        <span class="go">View project <span class="arw">↗</span></span>
+      </a>
+
+      <a href="#" class="card reveal d1" data-tilt>
+        <div class="idx">// 04</div>
+        <h3>Project Five</h3>
+        <p>Last placeholder in the set. Link each card to a live demo, a repo, or a write-up.</p>
+        <div class="tags"><span>Placeholder</span><span>Tooling</span></div>
+        <span class="go">View project <span class="arw">↗</span></span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     CONTACT SECTION  (id="contact")
+     EDIT the mailto: links (you@email.com) and the social hrefs (currently #).
+     ========================================================================== -->
+<section id="contact" class="contact" data-accent="lime">
+  <div class="wrap">
+    <div class="eyebrow reveal" style="justify-content:center">04 — Contact</div>
+
+    <!-- Big closing line. The linked word opens your email app. -->
+    <div class="big reveal d1">Let's build<br>something <a href="mailto:you@email.com">together.</a></div>
+    <p class="lead reveal d2">Placeholder line inviting people to reach out. Tell them what you're open to and how fast you reply.</p>
+
+    <!-- Contact form. NOTE: this is front-end only — see the JS at the bottom.
+         Right now "Send" just shows a confirmation; it does not email anything.
+         To make it real, connect a service like Formspree/Getform (I can help). -->
+    <form class="form reveal d3" id="contactForm">
+      <div class="row">
+        <div class="field"><label>Name</label><input type="text" name="name" placeholder="Your name" required /></div>
+        <div class="field"><label>Email</label><input type="email" name="email" placeholder="you@email.com" required /></div>
+      </div>
+      <div class="field"><label>Message</label><textarea name="message" placeholder="What's on your mind?" required></textarea></div>
+      <button type="submit" class="btn btn-primary">Send message <span>→</span></button>
+    </form>
+
+    <!-- Social links. Replace each href="#" with your real profile URLs. -->
+    <div class="socials reveal d4">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Twitter / X</a>
+      <a href="mailto:you@email.com">Email</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     FOOTER
+     ========================================================================== -->
+<footer>
+  <div class="wrap">
+    <p>© <span id="year"></span> Your Name — built with intent.</p>  <!-- year auto-fills via JS -->
+    <!-- The one *visible* hook so the CTF is discoverable. Opens the terminal. -->
+    <button class="term-hook" id="termHook">visitor@portfolio:~$ <span class="blink">▊</span></button>
+    <a class="top" id="toTop">Back to top ↑</a>
+  </div>
+</footer>
+
+<!-- ==========================================================================
+     HIDDEN CTF ELEMENTS  (terminal + login portal + secret panel)
+     These sit here empty/hidden; the CTF <script> at the bottom fills and
+     controls them. Nothing here is shown until the visitor opens the terminal.
+     ========================================================================== -->
+
+<!-- The console. Opens on ` / ~ or via the footer hook. -->
+<div class="term" id="term" aria-hidden="true">
+  <div class="term-bar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span class="ttl">visitor@portfolio — /home/visitor — zsh</span>
+    <button class="x" id="termClose" title="close (Esc)">✕</button>
+  </div>
+  <div class="term-body" id="termBody"></div>            <!-- output lines print here -->
+  <div class="term-in">
+    <span class="prompt">visitor@portfolio:~$</span>
+    <input id="termInput" autocomplete="off" autocapitalize="off" spellcheck="false" />
+  </div>
+</div>
+
+<!-- Stage 2: the deliberately-vulnerable admin login (fake DB, sandboxed). -->
+<div class="cyber-modal" id="loginModal">
+  <div class="cyber-box">
+    <button class="close" id="loginClose">✕</button>
+    <h4>admin portal</h4>
+    <div class="sub">restricted // authorized personnel only<br>this login is a sandboxed honeypot — the "database" lives in your browser.</div>
+    <label>username</label>
+    <input id="luser" placeholder="username" autocomplete="off" spellcheck="false" />
+    <label>password</label>
+    <input id="lpass" type="text" placeholder="password" autocomplete="off" spellcheck="false" />
+    <!-- live preview of the (naive) query being built — shows the vuln in action -->
+    <div class="query" id="lquery"></div>
+    <div class="msg" id="lmsg"></div>
+    <button class="go" id="lgo">authenticate →</button>
+    <div class="hint">hint: the query trusts your input completely.</div>
+  </div>
+</div>
+
+<!-- Stage 4: the payoff, revealed only after the cipher is decrypted. -->
+<div class="cyber-modal" id="secretModal">
+  <div class="cyber-box secret" id="secretBox"></div>
+</div>
+
+<!-- ==========================================================================
+     SCRIPT  —  all page behavior
+     --------------------------------------------------------------------------
+     Everything is wrapped in one function so variables don't leak globally.
+     "reduce" checks whether the visitor asked their device to minimize motion;
+     when true, the flashier effects are skipped.
+     ========================================================================== -->
+<script>
+(function(){
+  // If the visitor prefers reduced motion, we disable the heavier animations.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Lookup table: name → [hex color, "r,g,b" version]. Used to recolor the page
+  // per section. Add a color here if you want a new accent option.
+  const accents = {
+    cyan:['#22D3EE','34,211,238'], pink:['#FF2D9B','255,45,155'],
+    violet:['#8B5CF6','139,92,246'], lime:['#B4FF39','180,255,57'],
+    amber:['#FFB020','255,176,32']
+  };
+  const root = document.documentElement;   // the <html> element (where CSS vars live)
+
+  /* ---------- CUSTOM CURSOR (dot + trailing ring + spotlight) ----------
+     Only runs on devices with a real mouse ("fine" pointer) and motion allowed.
+     The ring and spotlight "chase" the mouse with easing for a smooth trail. */
+  const dot = document.getElementById('cdot'), ring = document.getElementById('cring'),
+        spot = document.getElementById('spotlight');
+  let mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my, sx=mx, sy=my; // target + current positions
+  const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if(fine && !reduce){
+    // Track the real mouse position; move the dot instantly.
+    addEventListener('mousemove', e=>{
+      mx=e.clientX; my=e.clientY;
+      dot.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    });
+    // Animation loop: ease the ring (fast) and spotlight (slow) toward the mouse.
+    (function loop(){
+      rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
+      sx+=(mx-sx)*.08; sy+=(my-sy)*.08;
+      ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+      spot.style.transform=`translate(${sx}px,${sy}px)`;
+      requestAnimationFrame(loop);
+    })();
+    // Grow the ring when hovering interactive things.
+    document.querySelectorAll('a,button,input,textarea,[data-tilt]').forEach(el=>{
+      el.addEventListener('mouseenter',()=>ring.classList.add('hover'));
+      el.addEventListener('mouseleave',()=>ring.classList.remove('hover'));
+    });
+  } else { spot.style.display='none'; }   // no spotlight on touch devices
+
+  /* ---------- PER-SECTION ACCENT COLOR ----------
+     Watches which section is centered on screen and rewrites the --accent CSS
+     variables to that section's data-accent color. Also marks the matching
+     spine-nav link as "active". */
+  const spineLinks = [...document.querySelectorAll('.spine a')];
+  function setAccent(name){
+    const a = accents[name]||accents.cyan;
+    root.style.setProperty('--accent', a[0]);
+    root.style.setProperty('--accent-rgb', a[1]);
+    const brand = document.querySelector('.topbar .brand b'); // (reserved; brand recolors via --accent)
+  }
+  const sections = [...document.querySelectorAll('section[data-accent]')];
+  const secObs = new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        setAccent(en.target.dataset.accent);
+        const id = en.target.id;
+        spineLinks.forEach(l=>l.classList.toggle('active', l.getAttribute('href')==='#'+id));
+      }
+    });
+  },{rootMargin:'-45% 0px -45% 0px', threshold:0}); // "-45%" = trigger near screen center
+  sections.forEach(s=>secObs.observe(s));
+
+  /* ---------- SCROLL REVEAL ----------
+     Adds the "in" class (fade + slide up) the first time each ".reveal"
+     element scrolls into view, then stops watching it. */
+  const revObs = new IntersectionObserver(entries=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); revObs.unobserve(en.target);} });
+  },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+  /* ---------- ANIMATED STAT COUNTERS ----------
+     Counts from 0 up to the number in data-count when the stat scrolls in. */
+  const cObs = new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(!en.isIntersecting) return;
+      const el=en.target, target=+el.dataset.count; let n=0;
+      const step=Math.max(1,Math.ceil(target/40));     // ~40 frames to finish
+      const t=setInterval(()=>{ n+=step; if(n>=target){n=target;clearInterval(t);} el.textContent=n; },28);
+      cObs.unobserve(el);
+    });
+  },{threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(el=>cObs.observe(el));
+
+  /* ---------- HERO ROLE TYPEWRITER ----------
+     Types out each phrase, pauses, deletes it, then moves to the next.
+     EDIT THIS ARRAY to change the rotating job titles under your name. */
+  const roles=['Machine Learning Engineer','Security Researcher','Full-Stack Builder','Systems Thinker','Problem Solver'];
+  const rot=document.getElementById('rot');
+  if(!reduce){
+    let ri=0,ci=0,del=false;   // ri=which phrase, ci=how many chars, del=deleting?
+    (function type(){
+      const w=roles[ri];
+      rot.textContent = del ? w.slice(0,ci--) : w.slice(0,ci++);
+      let d=del?45:90;                                   // delete faster than type
+      if(!del && ci===w.length+1){ d=1500; del=true; ci=w.length; }  // full word → pause, then delete
+      else if(del && ci===0){ del=false; ri=(ri+1)%roles.length; d=350; } // empty → next word
+      setTimeout(type,d);
+    })();
+  }
+
+  /* ---------- 3D TILT ON PROJECT CARDS ----------
+     Rotates the card slightly toward the cursor and moves the inner glow.
+     Mouse-only; disabled for reduced motion. */
+  if(fine && !reduce){
+    document.querySelectorAll('[data-tilt]').forEach(card=>{
+      card.addEventListener('mousemove',e=>{
+        const r=card.getBoundingClientRect();
+        const px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height; // 0..1 within card
+        card.style.transform=`perspective(900px) rotateY(${(px-.5)*7}deg) rotateX(${(.5-py)*7}deg) translateY(-4px)`;
+        card.style.setProperty('--mx',(px*100)+'%');   // feeds the CSS glow position
+        card.style.setProperty('--my',(py*100)+'%');
+      });
+      card.addEventListener('mouseleave',()=>{ card.style.transform=''; }); // reset when leaving
+    });
+  }
+
+  /* ---------- MOBILE MENU TOGGLE ---------- */
+  const mb=document.getElementById('menuBtn'), mm=document.getElementById('mobileMenu');
+  mb.addEventListener('click',()=>{ mm.classList.toggle('open'); mb.textContent=mm.classList.contains('open')?'CLOSE':'MENU'; });
+  mm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{ mm.classList.remove('open'); mb.textContent='MENU'; }));
+
+  /* ---------- SMALL EXTRAS ---------- */
+  document.getElementById('year').textContent=new Date().getFullYear();   // footer year
+  document.getElementById('toTop').addEventListener('click',()=>scrollTo({top:0,behavior:reduce?'auto':'smooth'})); // back-to-top
+
+  // Contact form: currently a DEMO. It blocks the real submit and just shows a
+  // "sent" confirmation for 2.2s. Wire in a form service to actually deliver mail.
+  document.getElementById('contactForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const b=e.target.querySelector('button'); const t=b.innerHTML;
+    b.innerHTML='Message sent ✓'; b.style.background='var(--lime)';
+    setTimeout(()=>{ b.innerHTML=t; b.style.background=''; e.target.reset(); },2200);
+  });
+})();
+</script>
+
+<!-- ==========================================================================
+     CTF ENGINE  —  the cybersecurity easter-egg (kept separate on purpose)
+     --------------------------------------------------------------------------
+     The chain, stage by stage:
+       0. BREADCRUMBS  → a base64 comment in the source + a styled console
+                         banner both point the visitor to press ` and type help.
+       1. TERMINAL     → a fake shell. `ls` / `cat` surface clues; `.env` leaks
+                         an XOR key; a clue points at the admin `portal`.
+       2. SQLi LOGIN   → a mock login backed by a FAKE in-memory database. It is
+                         intentionally injectable ( ' OR '1'='1 ). No real
+                         backend exists, so this can never be a real vuln.
+       3. CIPHER       → bypassing auth reveals `secret.enc`; `decrypt <key>`
+                         XOR-decodes it using the key leaked in step 1.
+       4. PAYOFF       → decrypting opens the secret panel with the final flag
+                         and hidden content. 3 flags total.
+
+     Everything is client-side and self-contained. Edit the FLAGS, the fake
+     `files`, the credentials, or the `secretHTML()` payoff to make it yours.
+     ========================================================================== -->
+<script>
+(function(){
+  /* ---------- tiny helpers ---------- */
+  const $  = s => document.querySelector(s);
+  const term=$('#term'), body=$('#termBody'), input=$('#termInput'), hook=$('#termHook');
+  const b64decode = s => { try { return decodeURIComponent(escape(atob(s))); } catch(e){ return '(invalid base64)'; } };
+  const esc = s => s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+  /* ---------- the three collectable flags ---------- */
+  const FLAGS = {
+    recon: 'FLAG{v13w_s0urc3_1s_r3c0n}',      // for finding/opening the terminal
+    sqli:  'FLAG{sql1_1s_st1ll_numb3r_0n3}',  // for the injection bypass
+    crypto:'FLAG{crypt0_c0mpl3t3s_th3_ch41n}' // for decrypting secret.enc
+  };
+
+  /* ---------- puzzle state ---------- */
+  const state = {
+    found: new Set(),   // which flags have been collected
+    key:   'n3ur0n',    // the XOR key that WILL be "leaked" via .env
+    authed:false        // has the visitor bypassed the login?
+  };
+
+  /* ---------- the fake filesystem the terminal reads from ----------
+     Edit freely. `secret.enc` stays hidden until after the login bypass. */
+  const files = {
+    'README.txt':
+      "welcome, visitor.\n"+
+      "you're poking at a portfolio that pokes back.\n\n"+
+      "three flags are hidden here. find them all.\n"+
+      "  • recon  — you're already earning this one.\n"+
+      "  • access — the admin `portal` is locked. get in anyway.\n"+
+      "  • crypto — something is encrypted. decrypt it.\n\n"+
+      "commands you'll want: ls, cat, portal, decrypt. start with `ls -a`.",
+    'notes.enc':
+      // base64 clue → decode with:  decode <this string>   (or the `cat` prints the hint)
+      "dGhlIGFkbWluIHBvcnRhbCBwYXN0ZXMgeW91ciBpbnB1dCBzdHJhaWdodCBpbnRvIGl0cyBTUUwgcXVlcnkuIGEgc2luZ2xlIHN0cmF5IHF1b3RlIHJld3JpdGVzIHRoZSBsb2dpYy4gdGhlIGNsYXNzaWMga2V5IHRoYXQgZml0cyB0aGlzIGxvY2s6ICAnIE9SICcxJz0nMQ==",
+    '.env':
+      "# committed by accident. do not do this in real life.\n"+
+      "DB_HOST=127.0.0.1\n"+
+      "DB_USER=admin\n"+
+      "XOR_KEY=n3ur0n",
+    'projects/': '[dir]  (nice try — the real ones are on the page above)'
+  };
+
+  /* ---------- printing to the terminal ---------- */
+  function print(html){ const d=document.createElement('div'); d.className='ln'; d.innerHTML=html; body.appendChild(d); body.scrollTop=body.scrollHeight; }
+  function award(name){
+    if(state.found.has(name)) return;
+    state.found.add(name);
+    print('<span class="a">◆ flag captured ['+state.found.size+'/3]:</span> <span class="g">'+FLAGS[name]+'</span>');
+  }
+
+  /* ---------- open / close the terminal ---------- */
+  let bootDone=false;
+  function openTerm(){
+    term.classList.add('open'); term.setAttribute('aria-hidden','false');
+    if(!bootDone){ boot(); bootDone=true; }
+    setTimeout(()=>input.focus(),120);
+  }
+  function closeTerm(){ term.classList.remove('open'); term.setAttribute('aria-hidden','true'); }
+  hook.addEventListener('click', openTerm);
+  $('#termClose').addEventListener('click', closeTerm);
+
+  // The welcome banner + the first flag (you had to discover this to be here).
+  function boot(){
+    print('<span class="g">┌─ visitor@portfolio</span> <span class="dim">— access terminal v1.3.37</span>');
+    print('<span class="dim">└─ type </span><span class="c">help</span><span class="dim"> for commands. this is a sandbox — nothing here touches a real server.</span>');
+    print('');
+    award('recon');
+    print('');
+  }
+
+  /* ---------- command handlers ---------- */
+  const commands = {
+    help(){
+      print('<span class="c">available commands</span>');
+      print('  <span class="g">help</span>            this menu');
+      print('  <span class="g">ls</span> [-a]         list files');
+      print('  <span class="g">cat</span> &lt;file&gt;      read a file');
+      print('  <span class="g">decode</span> &lt;b64&gt;    base64-decode a string');
+      print('  <span class="g">portal</span>          open the admin login');
+      print('  <span class="g">decrypt</span> &lt;key&gt;   decrypt secret.enc (after access)');
+      print('  <span class="g">flags</span>           show progress');
+      print('  <span class="g">whoami</span> · <span class="g">clear</span> · <span class="g">exit</span>');
+      print('<span class="dim">  (a few undocumented commands exist too. go on.)</span>');
+    },
+    whoami(){ print(state.authed ? '<span class="a">admin</span> <span class="dim">(elevated — you shouldn\'t be here 😏)</span>' : 'visitor <span class="dim">(unprivileged)</span>'); },
+    ls(arg){
+      const all = arg==='-a';
+      Object.keys(files).forEach(f=>{
+        if(!all && f.startsWith('.')) return;
+        const dir = files[f]==='[dir]' || files[f].startsWith('[dir]');
+        print((dir?'<span class="c">':'<span class="g">')+f+'</span>');
+      });
+      if(state.authed) print('<span class="p">secret.enc</span> <span class="dim">(decrypted target)</span>');
+      if(!all) print('<span class="dim">…some files are hidden. try `ls -a`.</span>');
+    },
+    cat(arg){
+      if(!arg){ print('usage: cat &lt;file&gt;'); return; }
+      if(arg==='secret.enc'){
+        if(!state.authed){ print('<span class="p">cat: secret.enc: permission denied</span> <span class="dim">(authenticate at the `portal` first)</span>'); return; }
+        print('<span class="dim">-----BEGIN ENCRYPTED-----</span>');
+        print('<span class="v">'+SECRET_B64+'</span>');
+        print('<span class="dim">-----END ENCRYPTED----- (xor + base64. decrypt &lt;key&gt;)</span>');
+        return;
+      }
+      if(!(arg in files)){ print('cat: '+esc(arg)+': No such file'); return; }
+      const raw = files[arg];
+      if(arg==='notes.enc'){
+        print('<span class="dim">'+raw+'</span>');
+        print('<span class="dim">(that\'s base64 — run: </span><span class="c">decode '+raw.slice(0,14)+'…</span><span class="dim">)</span>');
+        return;
+      }
+      print('<span class="dim">'+esc(raw)+'</span>');
+    },
+    decode(arg){
+      if(!arg){ print('usage: decode &lt;base64&gt;'); return; }
+      print('<span class="g">'+esc(b64decode(arg))+'</span>');
+    },
+    portal(){ openLogin(); print('<span class="dim">opening admin portal…</span>'); },
+    login(){ this.portal(); },
+    decrypt(arg){
+      if(!state.authed){ print('<span class="p">decrypt: no ciphertext loaded</span> <span class="dim">(get `access` first — try the `portal`)</span>'); return; }
+      if(!arg){ print('usage: decrypt &lt;key&gt; <span class="dim">(the key leaked somewhere in `.env`)</span>'); return; }
+      const out = xorDecrypt(SECRET_B64, arg);
+      if(out === FLAGS.crypto){
+        print('<span class="g">'+out+'</span>');
+        award('crypto');
+        print('<span class="a">decryption successful. opening secure channel…</span>');
+        setTimeout(openSecret, 700);
+      } else {
+        print('<span class="p">decrypt: wrong key — output is garbage:</span> <span class="dim">'+esc(out)+'</span>');
+      }
+    },
+    flags(){
+      print('<span class="c">progress: '+state.found.size+'/3</span>');
+      ['recon','sqli','crypto'].forEach(k=>{
+        const got=state.found.has(k);
+        print('  ['+(got?'<span class="g">x</span>':' ')+'] '+k+(got?' <span class="dim">'+FLAGS[k]+'</span>':''));
+      });
+      if(state.found.size===3) print('<span class="a">◆ all flags captured. you win. respect.</span>');
+    },
+    clear(){ body.innerHTML=''; },
+    exit(){ closeTerm(); },
+    /* ---- undocumented easter eggs ---- */
+    sudo(){ print('<span class="p">visitor is not in the sudoers file. This incident will be reported.</span> <span class="dim">(kidding.)</span>'); },
+    matrix(){ print('<span class="g">Wake up, Neo…</span> <span class="dim">the page is already green enough.</span>'); },
+    nmap(){ print('<span class="dim">Starting Nmap…\nPORT   STATE SERVICE\n80/tcp open  http  (this very page)\n1337/tcp open  easter-egg\n</span>'); },
+    coffee(){ print('<span class="a">☕ brewing… HTTP 418: I\'m a teapot.</span>'); },
+    hire(){ print('<span class="g">SELECT * FROM candidates WHERE name=\'you\' AND status=\'available\';</span> <span class="dim">→ 1 row. scroll up to Contact.</span>'); }
+  };
+
+  /* ---------- the XOR-decrypt used by `decrypt` ---------- */
+  function xorDecrypt(b64, key){
+    let raw; try{ raw = atob(b64); }catch(e){ return ''; }
+    let out='';
+    for(let i=0;i<raw.length;i++) out += String.fromCharCode(raw.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    return out;
+  }
+  // ciphertext = XOR(FLAGS.crypto, 'n3ur0n') then base64 (generated to match).
+  const SECRET_B64 = 'KH80NUsNHEoFBgAxDQMYAlxdGgAGLUQGXWwWGgRfAE4=';
+
+  /* ---------- run a typed command line ---------- */
+  const history=[]; let hpos=-1;
+  function run(line){
+    print('<span class="g">visitor@portfolio</span>:<span class="c">~</span>$ '+esc(line));
+    const [cmd, ...rest] = line.trim().split(/\s+/);
+    const arg = rest.join(' ');
+    if(!cmd) return;
+    if(commands[cmd]) commands[cmd](arg);
+    else print('<span class="p">command not found: '+esc(cmd)+'</span> <span class="dim">(try `help`)</span>');
+  }
+  input.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){
+      const line=input.value; input.value='';
+      if(line.trim()){ history.unshift(line); hpos=-1; }
+      run(line);
+    } else if(e.key==='ArrowUp'){ e.preventDefault(); if(hpos<history.length-1){ hpos++; input.value=history[hpos]; } }
+    else if(e.key==='ArrowDown'){ e.preventDefault(); if(hpos>0){ hpos--; input.value=history[hpos]; } else { hpos=-1; input.value=''; } }
+  });
+
+  /* ---------- Stage 2: the fake, injectable login ---------- */
+  const loginModal=$('#loginModal'), luser=$('#luser'), lpass=$('#lpass'),
+        lquery=$('#lquery'), lmsg=$('#lmsg');
+  function openLogin(){ loginModal.classList.add('open'); updateQuery(); setTimeout(()=>luser.focus(),100); }
+  function closeLogin(){ loginModal.classList.remove('open'); }
+  $('#loginClose').addEventListener('click', closeLogin);
+
+  // Show the naive query being built — this is what makes the vuln visible/fun.
+  function updateQuery(){
+    const u=luser.value, p=lpass.value;
+    lquery.innerHTML = 'SELECT * FROM users WHERE user=<b>\''+esc(u)+'\'</b> AND pass=<b>\''+esc(p)+'\'</b>;';
+  }
+  luser.addEventListener('input', updateQuery);
+  lpass.addEventListener('input', updateQuery);
+
+  // The "database" and the naive auth check. An injected quote flips it to true.
+  function attemptLogin(){
+    const u=luser.value, p=lpass.value;
+    const query = ("user='"+u+"' AND pass='"+p+"'").toLowerCase();
+    // patterns a naive string-built query would wrongly evaluate as always-true:
+    const bypass = /'\s*or\s*'?1'?\s*=\s*'?1/.test(query)   // ' OR '1'='1
+                || /'\s*or\s*1\s*=\s*1/.test(query)          // ' OR 1=1
+                || /'\s*or\s*''\s*=\s*'/.test(query)         // ' OR ''='
+                || /admin'\s*--/.test(query)                 // admin' --
+                || /'\s*--/.test(query);                     // ' --   (comment out pass)
+    // (a "real" credential also works, in case they find it another way)
+    const legit = (u==='admin' && p==='n3ur0n');
+    if(bypass || legit){
+      lmsg.className='msg ok';
+      lmsg.textContent = bypass ? 'auth bypassed — injection accepted. welcome, admin.' : 'credentials accepted.';
+      state.authed=true;
+      setTimeout(()=>{
+        closeLogin();
+        if(!term.classList.contains('open')) openTerm();
+        award('sqli');
+        print('<span class="a">◆ admin portal breached.</span> a new file appeared: <span class="p">secret.enc</span>');
+        print('<span class="dim">read it with `cat secret.enc`, then `decrypt &lt;key&gt;` (the key leaked in `.env`).</span>');
+        input.focus();
+      }, 650);
+    } else {
+      lmsg.className='msg err';
+      lmsg.textContent = 'access denied. (this login trusts input completely — think like an attacker.)';
+    }
+  }
+  $('#lgo').addEventListener('click', attemptLogin);
+  lpass.addEventListener('keydown', e=>{ if(e.key==='Enter') attemptLogin(); });
+
+  /* ---------- Stage 4: the secret payoff panel ---------- */
+  const secretModal=$('#secretModal'), secretBox=$('#secretBox');
+  function secretHTML(){
+    // EDIT THIS to reveal whatever you want — bonus projects, a note, a resume link.
+    return ''+
+      '<button class="close" id="secretClose">✕</button>'+
+      '<h4>// root access granted</h4>'+
+      '<div class="sub">you followed the whole chain — recon, injection, crypto. that\'s the exact instinct these roles hire for.</div>'+
+      '<div class="flag">'+FLAGS.recon+'<br>'+FLAGS.sqli+'<br>'+FLAGS.crypto+'</div>'+
+      '<ul>'+
+        '<li><b>CLASSIFIED PROJECT · 01</b>A hidden project you only surface here. Swap in something you\'re proud of.</li>'+
+        '<li><b>CLASSIFIED PROJECT · 02</b>Another bonus reveal — a write-up, a demo link, a war story.</li>'+
+        '<li><b>PERSONAL</b>Room for a personal easter egg: a favorite quote, a chess puzzle, a note to whoever made it this far.</li>'+
+      '</ul>'+
+      '<div class="hint">nicely done. now go say hi → <a href="#contact" id="secretContact">Contact</a></div>';
+  }
+  function openSecret(){
+    secretBox.innerHTML = secretHTML();
+    secretModal.classList.add('open');
+    $('#secretClose').addEventListener('click', ()=>secretModal.classList.remove('open'));
+    const c=$('#secretContact'); if(c) c.addEventListener('click', ()=>secretModal.classList.remove('open'));
+  }
+
+  /* ---------- global keys ---------- */
+  document.addEventListener('keydown', e=>{
+    // ` / ~ toggles the terminal — but never while typing in the real contact form.
+    const inContactForm = e.target.closest && e.target.closest('#contactForm');
+    if((e.key==='`' || e.key==='~') && !inContactForm){
+      e.preventDefault();
+      term.classList.contains('open') ? closeTerm() : openTerm();
+    }
+    if(e.key==='Escape'){ closeTerm(); closeLogin(); secretModal.classList.remove('open'); }
+  });
+
+  /* ---------- Stage 0: the console breadcrumb ----------
+     Anyone who opens devtools (every security person, ever) gets a nudge. */
+  const banner = [
+    '%c┌────────────────────────────────────────────┐',
+    '│  you opened the console. good instinct.      │',
+    '│  there is a hidden CTF on this page.         │',
+    '│  press the  `  key (top-left) and type help  │',
+    '└────────────────────────────────────────────┘'
+  ].join('\n');
+  console.log(banner, 'color:#B4FF39;font-family:monospace;font-size:12px');
+  console.log('%cbreadcrumb:%c '+b64decode('cmVjb24gY29tcGxldGUuIHlvdSBvcGVuZWQgdGhlIGNvbnNvbGUg4oCUIHRoYXQgaW5zdGluY3QgaXMgdGhlIHdob2xlIHBvaW50LiBwcmVzcyBgIGFuZCB0eXBlOiBoZWxw'),
+    'color:#22D3EE;font-weight:bold','color:#8a8aa6');
+})();
+</script>
+</body>
+</html>
