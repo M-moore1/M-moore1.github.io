@@ -425,6 +425,43 @@ h2.title em{font-style:normal; color:var(--accent)}
 .socials a:hover{color:var(--accent); border-color:var(--accent); transform:translateY(-3px)}
 
 /* ============================================================================
+   INVOLVEMENT  —  card grid (id="involvement")
+   ----------------------------------------------------------------------------
+   For everything that isn't a job or a project — leadership, campus roles,
+   clubs, volunteering. Styled to feel related to Projects but distinct: a
+   growing accent bar on the LEFT instead of the tilt/glow. Each ".inv-card"
+   is one entry — copy a whole block in the HTML to add another.
+   ============================================================================ */
+.inv-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:22px; margin-top:52px}  /* 2 columns */
+.inv-card{
+  position:relative; background:var(--panel); border:1px solid var(--line);
+  border-radius:18px; padding:26px 28px 26px 32px; overflow:hidden;
+  transition:border-color .3s var(--ease), transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.inv-card::before{                     /* the accent bar that grows on hover */
+  content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--accent); transform:scaleY(0); transform-origin:top;
+  transition:transform .3s var(--ease);
+}
+.inv-card:hover{border-color:rgba(var(--accent-rgb),.5); transform:translateY(-4px);
+  box-shadow:0 22px 55px -30px rgba(var(--accent-rgb),.5)}
+.inv-card:hover::before{transform:scaleY(1)}
+.inv-top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px}
+.inv-card .kicker{                     /* the little role-type pill (e.g. "Leadership") */
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--accent); padding:4px 10px; border:1px solid rgba(var(--accent-rgb),.35); border-radius:100px;
+}
+.inv-card .inv-date{font-family:var(--mono); font-size:12px; color:var(--faint)}
+.inv-card h3{font-family:var(--display); font-weight:700; font-size:1.4rem; margin:0 0 3px; letter-spacing:-.01em} /* role title */
+.inv-card .inv-org{color:var(--muted); font-size:.95rem; margin-bottom:12px}   /* org · location */
+.inv-card .inv-org b{color:var(--text)}
+.inv-card p{color:var(--muted); font-size:.98rem; margin-bottom:16px}
+.inv-tags{display:flex; gap:8px; flex-wrap:wrap}
+.inv-tags span{font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:7px;
+  background:var(--panel-2); color:var(--muted); border:1px solid var(--line)}
+@media (max-width:900px){.inv-grid{grid-template-columns:1fr}}                  /* stack on mobile */
+
+/* ============================================================================
    FOOTER
    ============================================================================ */
 footer{border-top:1px solid var(--line); padding:34px 0; margin-top:40px}
@@ -590,7 +627,8 @@ footer .top:hover{color:var(--accent)}
   <a href="#about"><span>01</span>About</a>
   <a href="#experience"><span>02</span>Experience</a>
   <a href="#projects"><span>03</span>Projects</a>
-  <a href="#contact"><span>04</span>Contact</a>
+  <a href="#involvement"><span>04</span>Involvement</a>
+  <a href="#contact"><span>05</span>Contact</a>
 </nav>
 
 <!-- ==========================================================================
@@ -603,6 +641,7 @@ footer .top:hover{color:var(--accent)}
   <a href="#about" data-accent="pink"><span class="node"></span><span class="txt">About</span></a>
   <a href="#experience" data-accent="violet"><span class="node"></span><span class="txt">Experience</span></a>
   <a href="#projects" data-accent="cyan"><span class="node"></span><span class="txt">Projects</span></a>
+  <a href="#involvement" data-accent="amber"><span class="node"></span><span class="txt">Involvement</span></a>
   <a href="#contact" data-accent="lime"><span class="node"></span><span class="txt">Contact</span></a>
 </nav>
 
@@ -852,14 +891,77 @@ footer .top:hover{color:var(--accent)}
 </section>
 
 <!-- ==========================================================================
+     INVOLVEMENT SECTION  (id="involvement")
+     For everything that isn't a job or a project — leadership, campus roles,
+     clubs, volunteering, competitions. To add an entry, copy one whole
+     <div class="inv-card reveal"> … </div> block.
+     ========================================================================== -->
+<section id="involvement" data-accent="amber">
+  <div class="wrap">
+    <div class="eyebrow reveal">04 — Involvement</div>
+    <h2 class="title reveal d1">Off the <em>clock.</em></h2>
+    <p class="lead reveal d2">Leadership, campus roles, clubs, and community — the things that round out the résumé.</p>
+
+    <div class="inv-grid">
+
+      <!-- ---- Involvement entry (copy this whole block to add more) ---- -->
+      <div class="inv-card reveal">
+        <div class="inv-top">
+          <span class="kicker">Leadership</span>              <!-- role type -->
+          <span class="inv-date">2024 — Present</span>        <!-- dates     -->
+        </div>
+        <h3>VP of Operations</h3>                             <!-- your role -->
+        <div class="inv-org"><b>Husky Quantitative</b> · University of Connecticut</div>
+        <p>One or two lines on what you run, who you lead, and what you've changed. Numbers and outcomes land well here too.</p>
+        <div class="inv-tags"><span>Operations</span><span>Leadership</span></div>
+      </div>
+
+      <div class="inv-card reveal d1">
+        <div class="inv-top">
+          <span class="kicker">Residential Life</span>
+          <span class="inv-date">2023 — Present</span>
+        </div>
+        <h3>Resident Advisor</h3>
+        <div class="inv-org"><b>Office of Residential Life</b> · University of Connecticut</div>
+        <p>What you're responsible for — the residents you support, the events you run, the community you build.</p>
+        <div class="inv-tags"><span>Mentorship</span><span>Community</span></div>
+      </div>
+
+      <div class="inv-card reveal d2">
+        <div class="inv-top">
+          <span class="kicker">Placeholder</span>
+          <span class="inv-date">Year — Year</span>
+        </div>
+        <h3>Another Role or Activity</h3>
+        <div class="inv-org"><b>Organization</b> · Location</div>
+        <p>Clubs, competitions, hackathons, volunteering — anything that shows who you are outside of work.</p>
+        <div class="inv-tags"><span>Placeholder</span><span>Tag</span></div>
+      </div>
+
+      <div class="inv-card reveal d3">
+        <div class="inv-top">
+          <span class="kicker">Placeholder</span>
+          <span class="inv-date">Year — Year</span>
+        </div>
+        <h3>One More Slot</h3>
+        <div class="inv-org"><b>Organization</b> · Location</div>
+        <p>Last placeholder — duplicate or delete cards to fit how much you want to show.</p>
+        <div class="inv-tags"><span>Placeholder</span><span>Tag</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
      CONTACT SECTION  (id="contact")
      ========================================================================== -->
 <section id="contact" class="contact" data-accent="lime">
   <div class="wrap">
-    <div class="eyebrow reveal" style="justify-content:center">04 — Contact</div>
+    <div class="eyebrow reveal" style="justify-content:center">05 — Contact</div>
 
     <!-- Big closing line. The linked word opens your email app. -->
-    <div class="big reveal d1">Let's build<br>something <a href="masonmmoore1@gmail.com">together.</a></div>
+    <div class="big reveal d1">Let's build<br>something <a href="mailto:masonmmoore1@gmail.com">together.</a></div>
     <p class="lead reveal d2">Placeholder line inviting people to reach out. Tell them what you're open to and how fast you reply.</p>
 
     <!-- Contact form. NOTE: this is front-end only — see the JS at the bottom.
@@ -878,7 +980,7 @@ footer .top:hover{color:var(--accent)}
     <div class="socials reveal d4">
       <a href="https://github.com/M-moore1">GitHub</a>
       <a href="https://www.linkedin.com/in/masonmoore1/">LinkedIn</a>
-      <a href="masonmmoore1@gmail.com">Email</a>
+      <a href="mailto:masonmmoore1@gmail.com">Email</a>
     </div>
   </div>
 </section>
@@ -937,6 +1039,12 @@ footer .top:hover{color:var(--accent)}
 <div class="cyber-modal" id="secretModal">
   <div class="cyber-box secret" id="secretBox"></div>
 </div>
+
+
+
+
+
+
 
 <!-- ==========================================================================
      SCRIPT  —  all page behavior
@@ -1083,6 +1191,15 @@ footer .top:hover{color:var(--accent)}
   });
 })();
 </script>
+
+
+
+
+
+
+
+
+
 
 <!-- ==========================================================================
      CTF ENGINE  —  the cybersecurity easter-egg (kept separate on purpose)
