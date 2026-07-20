@@ -817,8 +817,8 @@ footer .top:hover{color:var(--accent)}
         <div class="feat-body">
           <div class="idx">// FEATURED PROJECT</div>
           <h3>Malware Classifier</h3>
-          <p>This is the featured slot — reserve it for the one thing you most want people to see. Describe the problem, what you built, and the result in two or three sentences. Placeholder copy goes here.</p>
-          <div class="tags"><span>Python</span><span>PyTorch</span><span>FastAPI</span><span>Docker</span></div>
+          <p>Built a machine learning pipeline for static malware detection, combining Random Forest, LightGBM, and MLP models in a soft-voting ensemble trained on the EMBER dataset (282 engineered features, SMOTE-balanced classes). Achieved 80.3% accuracy and 0.97 macro AUC, then productionized the system with FastAPI and Docker for real-time inference. Currently extending the project with adversarial robustness testing (FGSM/PGD attacks via IBM's ART library), framed against the MITRE ATLAS adversarial ML threat matrix.</p>
+          <div class="tags"><span>Python</span><span>PyTorch</span><span>FastAPI</span><span>Machine Learning</span><span>Cybersecurity</span></div>
           <span class="go">View case study <span class="arw">↗</span></span>
         </div>
       </a>
@@ -828,8 +828,8 @@ footer .top:hover{color:var(--accent)}
       <a href="#" class="card reveal" data-tilt>
         <div class="idx">// 01</div>                                                                    <!-- project number -->
         <h3>Frontier LVLM Hallucination Research Benchmark</h3>                                         <!-- project title  -->
-        <p>A short description of what this project does and why it's interesting. Swap in your own — one or two lines is plenty.</p>
-        <div class="tags"><span>Placeholder</span><span>Stack</span></div>                              <!-- tech used -->
+        <p>Designed and ran a benchmark evaluating hallucination and prompt-injection vulnerabilities in frontier large vision-language models, testing attack surfaces across GPT-o3, Claude Opus, and Gemini. Built a systematic evaluation framework to probe how these models fail under adversarial visual and textual inputs, surfacing security-relevant failure modes at the intersection of multimodal AI and adversarial robustness — research directly aimed at the emerging challenge of securing frontier vision-language systems against manipulation.</p>
+        <div class="tags"><span>Shell</span><span>Python</span><span>Prompt Injection</span><span>Prompt Engineering</span><span>Security Research</span></div>                              <!-- tech used -->
         <span class="go">View project <span class="arw">↗</span></span>
       </a>
 
@@ -837,8 +837,9 @@ footer .top:hover{color:var(--accent)}
       <a href="#" class="card reveal d1" data-tilt>
         <div class="idx">// 02</div>
         <h3>Automated Job Posting Scraper & Tracker</h3>
-        <p>Another placeholder card. The grid flexes automatically as you add more, so drop in as many as you like.</p>
-        <div class="tags"><span>Placeholder</span><span>Tooling</span></div>
+        <p>Designed a web scraper that automatically monitors LinkedIn, Indeed, and Handshake for new postings matching target criteria, parsing and structuring listings in real time. Built with BeautifulSoup, the tool eliminates manual searching by surfacing relevant opportunities the moment they're posted. Built a lightweight application to centralize and manage the job application pipeline end-to-end — tracking status, deadlines, and follow-ups across every stage from application to offer. Designed with simple scripting languages to bring structure and visibility to a process that's normally scattered across spreadsheets and email threads.
+        </p>
+        <div class="tags"><span>Python</span><span>Beautifulsoup</span><span>Live Updates</span><span>Discord Hook</span></div>
         <span class="go">View project <span class="arw">↗</span></span>
       </a>
       
@@ -846,8 +847,8 @@ footer .top:hover{color:var(--accent)}
       <a href="#" class="card reveal" data-tilt>
         <div class="idx">// 03</div>
         <h3>Optimal Wordle Solver</h3>
-        <p>Describe a build, an experiment, or something you're proud of. Keep the tone consistent with the rest.</p>
-        <div class="tags"><span>Placeholder</span><span>Stack</span></div>
+        <p>Developed an information-theoretic Wordle solver that selects each guess by maximizing expected information gain (entropy) across the remaining word space, narrowing down the solution in a minimal number of guesses. Implemented in python, the solver models the game as a search-and-reduction problem, benchmarked against optimal-strategy solutions to validate performance. Validated against 100k simulations with a 99.905% accuracy.</p>
+        <div class="tags"><span>Python</span><span>Algorithmic Design</span></div>
         <span class="go">View project <span class="arw">↗</span></span>
       </a>
 
@@ -855,26 +856,26 @@ footer .top:hover{color:var(--accent)}
       <a href="#" class="card reveal d1" data-tilt>
         <div class="idx">// 04</div>
         <h3>Optimal Rubiks Cube Solver</h3>
-        <p>Last placeholder in the set. Link each card to a live demo, a repo, or a write-up.</p>
-        <div class="tags"><span>Placeholder</span><span>Tooling</span></div>
+        <p>Built a Rubik's Cube solving engine that computes near-optimal move sequences using Kociemba's two-phase algorithm, balancing solve speed against move-count optimality. The solver models cube states computationally and searches the permutation space efficiently to consistently produce short, valid solutions. Uses OpenCV to pull cube faces from images and solves given cube state.</p>
+        <div class="tags"><span>Python</span><span>Computer Vision</span><span>OpenCV</span></div>
         <span class="go">View project <span class="arw">↗</span></span>
       </a>
     
       <!-- Password Manager and Generator -->
       <a href="#" class="card reveal" data-tilt>
-        <div class="idx">// 03</div>
+        <div class="idx">// 05</div>
         <h3>Password Manager & Generator</h3>
-        <p>Describe a build, an experiment, or something you're proud of. Keep the tone consistent with the rest.</p>
-        <div class="tags"><span>Placeholder</span><span>Stack</span></div>
+        <p>Engineered a secure password manager featuring encrypted local storage and a cryptographically strong password generator. Implemented AES-256 encryption to protect stored credentials, with a generator that produces high-entropy, 128 bits, passwords configurable by length and character set — built with security-first design principles drawn from hands-on cybersecurity work.</p>
+        <div class="tags"><span>C++</span><span>Cybersecurity</span><span>Secure Storage</span><span>Cryptography</span></div>
         <span class="go">View project <span class="arw">↗</span></span>
       </a>
 
       <!-- Speaker with Laser -->
       <a href="#" class="card reveal d1" data-tilt>
-        <div class="idx">// 04</div>
+        <div class="idx">// 06</div>
         <h3>Speaker with Laser Audio Modulator</h3>
-        <p>Last placeholder in the set. Link each card to a live demo, a repo, or a write-up.</p>
-        <div class="tags"><span>Placeholder</span><span>Tooling</span></div>
+        <p>Designed and built a free-space optical audio transmission system, modulating a laser's intensity with an audio signal and demodulating it at a photodiode receiver to reproduce sound through a speaker — a hands-on exploration of analog signal modulation and optoelectronics. Combined embedded/analog circuit design with signal processing to convert electrical audio into light and back again.</p>
+        <div class="tags"><span>Circuit Design</span><span>Hardware Implementation</span></div>
         <span class="go">View project <span class="arw">↗</span></span>
       </a>
 
