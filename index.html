@@ -10,16 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================================
-   LAYOUT CONCEPT: one screen. Left panel = About Me (always visible).
-   Right panel = tabbed content (Experience / Projects / Involvement / Contact).
-   Each tab recolors the page with its own neon accent.
+   LAYOUT CONCEPT: one screen. Left panel = a compact profile card that is
+   always visible. Right panel = six tabs (About, Experience, Projects,
+   Involvement, Contact, Terminal). Every tab recolors the page with its own
+   neon accent. Entries inside tabs are wide horizontal rows.
 
    HOW TO EDIT
-   - Colors, fonts, widths: change the tokens in :root below.
-   - Add a skill chip: copy a <span class="chip"> in the left panel.
+   - Colors, fonts, panel width: tokens in :root below.
+   - Add a degree: copy an <div class="edu-card"> in the About tab.
+   - Add a skill chip: copy a <span class="chip"> in the About tab.
    - Add a job: copy a <div class="tl-item"> in the Experience tab.
-   - Add a project: copy a <a class="card"> in the Projects tab.
-   - Add an involvement entry: copy a <div class="inv-card"> in the Involvement tab.
+   - Add a project: copy an <a class="card"> in the Projects tab.
+   - Add an involvement entry: copy a <div class="inv-card"> in Involvement.
    - Rotating job titles under your name: search the script for "const roles".
    ============================================================================ */
 :root{
@@ -48,7 +50,7 @@
   --body:'Space Grotesk',sans-serif;
   --mono:'JetBrains Mono',monospace;
 
-  --side-w:400px;                      /* width of the About Me panel */
+  --side-w:380px;                      /* width of the left profile panel */
   --ease:cubic-bezier(.2,.7,.2,1);
   color-scheme:dark;
 }
@@ -90,7 +92,7 @@ button{font:inherit;color:inherit}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .app{
   height:100%;
-  display:grid; grid-template-columns:minmax(340px,var(--side-w)) minmax(0,1fr); gap:18px;
+  display:grid; grid-template-columns:minmax(320px,var(--side-w)) minmax(0,1fr); gap:18px;
   padding-block:20px;
   padding-left:max(16px,env(safe-area-inset-left,0px));
   padding-right:max(16px,env(safe-area-inset-right,0px));
@@ -102,20 +104,21 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 }
 
 /* ============================================================================
-   LEFT PANEL  —  About Me
+   LEFT PANEL  —  compact profile card (name, role, facts, buttons)
    ============================================================================ */
-.side{overflow-y:auto;padding:30px 28px 22px;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent;display:flex;flex-direction:column;gap:26px}
-
-/* top block uses the cyan accent (the old Home section) */
-.hero-top{--accent:var(--cyan);--accent-rgb:34,211,238}
+.side{
+  --accent:var(--cyan);--accent-rgb:34,211,238;
+  overflow-y:auto;padding:30px 28px 20px;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent;
+  display:flex;flex-direction:column;justify-content:space-between;gap:26px;
+}
 .status{
   font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--muted);
-  display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;
+  display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;
   padding:7px 13px;border:1px solid var(--line);border-radius:100px;background:var(--bg-2)}
 .status .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(180,255,57,.5);animation:pulse 2.4s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(180,255,57,.5)}70%{box-shadow:0 0 0 9px rgba(180,255,57,0)}100%{box-shadow:0 0 0 0 rgba(180,255,57,0)}}
 
-h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.92;font-size:clamp(3rem,5vw,4.5rem);margin:0 0 4px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.92;font-size:clamp(3.2rem,5.4vw,4.8rem);margin:0 0 4px}
 h1 .line{display:block;overflow:hidden}
 h1 .line>span{display:inline-block;transform:translateY(110%);animation:rise .9s var(--ease) forwards}
 h1 .line:nth-child(2)>span{animation-delay:.09s}
@@ -124,15 +127,20 @@ h1 .line:nth-child(2)>span{animation-delay:.09s}
   -webkit-background-clip:text;background-clip:text;color:transparent;animation:shift 9s ease-in-out infinite}
 @keyframes shift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 
-.role{font-family:var(--mono);font-size:1.05rem;color:var(--text);margin:16px 0 14px;min-height:1.6em}
+.role{font-family:var(--mono);font-size:1.05rem;color:var(--text);margin:18px 0 14px;min-height:1.6em}
 .role .prefix{color:var(--faint)}
 .role .rot{color:var(--accent);border-right:2px solid var(--accent);padding-right:4px;animation:caret 1s step-end infinite}
 @keyframes caret{50%{border-color:transparent}}
-.blurb{color:var(--muted);font-size:.98rem;margin-bottom:20px}
+.blurb{color:var(--muted);font-size:.98rem;max-width:34ch}
 
-.cta-row{display:flex;gap:10px;flex-wrap:wrap}
+.meta{display:grid;font-family:var(--mono);font-size:11.5px}
+.meta div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:11px 0;border-top:1px solid var(--line)}
+.meta dt{color:var(--faint);letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;white-space:nowrap}
+.meta dd{color:var(--text);text-align:right}
+
+.cta-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-decoration:none;cursor:pointer;
-  padding:12px 20px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:12px 14px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
   border:1px solid transparent;transition:transform .25s var(--ease),background .25s,box-shadow .25s,color .25s,border-color .25s}
 .btn:hover{transform:translateY(-3px)}
 .btn-primary{background:var(--accent);color:#07070c;font-weight:600;box-shadow:0 10px 34px -12px rgba(var(--accent-rgb),.7)}
@@ -140,29 +148,7 @@ h1 .line:nth-child(2)>span{animation-delay:.09s}
 .btn-ghost{border-color:var(--line-strong);color:var(--text);background:rgba(255,255,255,.02)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 
-.hero-meta{display:grid;gap:4px;margin-top:20px;color:var(--faint);font-family:var(--mono);font-size:11.5px}
-.hero-meta b{color:var(--text);font-weight:600;margin-right:6px}
-
-/* about block uses the pink accent (the old About section) */
-.about-block{--accent:var(--pink);--accent-rgb:255,45,155;border-top:1px solid var(--line);padding-top:24px}
-.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:10px;margin-bottom:14px}
-.eyebrow::before{content:"";width:26px;height:1px;background:var(--accent)}
-h2.title{font-family:var(--display);font-weight:800;line-height:1.04;letter-spacing:-.02em;text-wrap:balance}
-h2.title em{font-style:normal;color:var(--accent)}
-.about-block h2.title{font-size:1.75rem;margin-bottom:14px}
-.about-copy p{color:var(--muted);margin-bottom:12px;font-size:.94rem;line-height:1.6}
-.about-copy p b{color:var(--text);font-weight:600}
-.about-copy .sig{font-family:var(--display);font-weight:700;color:var(--text);font-size:1.05rem;margin:4px 0 0}
-
-.mini{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:20px 0 10px}
-.stack{display:flex;flex-wrap:wrap;gap:7px}
-.chip{font-family:var(--mono);font-size:12px;padding:6px 11px;border-radius:9px;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);transition:all .25s var(--ease)}
-.chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
-.stat .num{font-family:var(--display);font-weight:800;font-size:2.1rem;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
-.stat .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:6px}
-
-.side-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 14px}
+.side-foot{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 14px}
 .side-foot p{font-family:var(--mono);font-size:11px;color:var(--faint)}
 .side-foot .top{font-family:var(--mono);font-size:11px;color:var(--muted);background:none;border:0;cursor:pointer}
 .side-foot .top:hover{color:var(--text)}
@@ -177,22 +163,70 @@ h2.title em{font-style:normal;color:var(--accent)}
 .stage{display:flex;flex-direction:column;overflow:hidden}
 .tabs{display:flex;flex:none;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;background:var(--panel)}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:18px 22px;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;
-  color:var(--faint);font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
+.tab{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:18px 16px;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;
+  color:var(--faint);font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
   transition:color .25s,background .25s,border-color .25s}
-.tab .node{width:9px;height:9px;border-radius:50%;border:1px solid var(--faint);background:var(--bg);transition:all .3s var(--ease)}
+.tab .node{width:8px;height:8px;border-radius:50%;border:1px solid var(--faint);background:var(--bg);transition:all .3s var(--ease)}
 .tab:hover{color:var(--text)}
 .tab.active{color:var(--text);border-bottom-color:var(--accent);background:linear-gradient(rgba(var(--accent-rgb),.10),transparent)}
 .tab.active .node{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px rgba(var(--accent-rgb),.16)}
 
-.views{flex:1;min-height:0;overflow-y:auto;padding:32px 36px 40px;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+.views{flex:1;min-height:0;overflow-y:auto;padding:32px 36px 40px;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent;
+  container-name:v;container-type:inline-size}
 .view:not([hidden]){animation:viewin .45s var(--ease) backwards}
 @keyframes viewin{from{opacity:0;transform:translateY(10px)}}
 .view:not([hidden]) .stag>*{animation:up .5s var(--ease) backwards;animation-delay:calc(var(--i,0)*55ms)}
 @keyframes up{from{opacity:0;transform:translateY(14px)}}
-.view h2.title{font-size:clamp(2rem,3.6vw,2.9rem);margin-bottom:12px}
+
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:10px;margin-bottom:14px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--accent)}
+h2.title{font-family:var(--display);font-weight:800;line-height:1.04;letter-spacing:-.02em;text-wrap:balance;font-size:clamp(2rem,3.4vw,2.8rem);margin-bottom:12px}
+h2.title em{font-style:normal;color:var(--accent)}
 .lead{color:var(--muted);font-size:1rem;max-width:62ch}
+.sec{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:34px 0 12px;display:flex;align-items:center;gap:12px}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---------- About ---------- */
+.about-copy{max-width:66ch;margin-top:6px}
+.about-copy p{color:var(--muted);margin-bottom:12px;font-size:.98rem}
+.about-copy p b{color:var(--text);font-weight:600}
+.about-copy .sig{font-family:var(--display);font-weight:700;color:var(--text);font-size:1.1rem;margin:4px 0 0}
+
+.edu-list{display:grid;gap:12px}
+.edu-card{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:8px 22px;align-items:center;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:18px 22px;transition:border-color .3s var(--ease)}
+.edu-card:hover{border-color:rgba(var(--accent-rgb),.5)}
+.edu-when{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.05em;line-height:1.5}
+.edu-main{min-width:0}
+.edu-main h4{font-family:var(--display);font-weight:700;font-size:1.2rem;letter-spacing:-.01em}
+.edu-org{color:var(--muted);font-size:.93rem}
+.edu-org b{color:var(--text)}
+.edu-main p{color:var(--muted);font-size:.93rem;margin-top:6px}
+.edu-gpa{text-align:right;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.edu-gpa b{display:block;font-family:var(--display);font-size:1.8rem;line-height:1;color:var(--accent);letter-spacing:0;margin-bottom:3px}
+
+.cred-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.cred{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;flex-direction:column;gap:6px;min-width:0;transition:border-color .3s var(--ease)}
+.cred:hover{border-color:rgba(var(--accent-rgb),.5)}
+.cred .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.cred b{font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.25}
+.cred.todo{border-style:dashed;background:transparent}
+.cred.todo b{color:var(--muted);font-weight:600;font-family:var(--body);font-size:.93rem}
+
+.kv-list{border:1px solid var(--line);border-radius:14px;background:var(--panel-2);padding:0 22px}
+.kv{display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;align-items:center;padding:15px 0}
+.kv+.kv{border-top:1px solid var(--line)}
+.kv h3{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:500}
+.stack{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-family:var(--mono);font-size:12px;padding:6px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg-2);color:var(--muted);transition:all .25s var(--ease)}
+.chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:14px;background:var(--panel-2);overflow:hidden}
+.stat{padding:18px 22px}
+.stat+.stat{border-left:1px solid var(--line)}
+.stat .num{font-family:var(--display);font-weight:800;font-size:2.2rem;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.stat .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:7px}
 
 /* ---------- Experience: timeline ---------- */
 .timeline{margin-top:34px;position:relative;padding-left:34px}
@@ -209,49 +243,51 @@ h2.title em{font-style:normal;color:var(--accent)}
 .tl-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
 .tl-tags span{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--line);color:var(--faint)}
 
-/* ---------- Projects: card grid ---------- */
-.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:30px}
-.card{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:18px;padding:26px;overflow:hidden;
-  text-decoration:none;color:inherit;display:flex;flex-direction:column;min-width:0;
+/* ---------- Projects: horizontal rows (title + tags | description) ---------- */
+.proj-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:30px}
+.card{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:22px 26px;overflow:hidden;
+  text-decoration:none;color:inherit;display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:10px 30px;align-items:start;
   transform-style:preserve-3d;transition:border-color .3s,box-shadow .3s;will-change:transform}
-.card.feat{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;gap:26px;align-items:stretch}
-.card::after{content:"";position:absolute;inset:0;border-radius:18px;opacity:0;transition:opacity .35s;pointer-events:none;
+.card::after{content:"";position:absolute;inset:0;border-radius:16px;opacity:0;transition:opacity .35s;pointer-events:none;
   background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%),rgba(var(--accent-rgb),.14),transparent 60%)}
 .card:hover{border-color:rgba(var(--accent-rgb),.5);box-shadow:0 24px 60px -30px rgba(var(--accent-rgb),.5)}
 .card:hover::after{opacity:1}
 .card .idx{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.1em}
-.card h3{font-family:var(--display);font-weight:700;font-size:1.35rem;margin:12px 0 10px;letter-spacing:-.01em}
-.card.feat h3{font-size:1.9rem}
-.card p{color:var(--muted);font-size:.94rem;margin-bottom:18px}
-.card .tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto}
-.card .tags span{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:7px;background:var(--bg-2);color:var(--muted);border:1px solid var(--line)}
-.card .go{font-family:var(--mono);font-size:12.5px;color:var(--accent);display:inline-flex;align-items:center;gap:8px;margin-top:16px}
+.card h3{font-family:var(--display);font-weight:700;font-size:1.2rem;margin:8px 0 0;letter-spacing:-.01em;line-height:1.2}
+.card .c-side,.card .c-main,.card .feat-body{min-width:0;display:flex;flex-direction:column}
+.card .c-side .tags{margin-top:14px}
+.card p{color:var(--muted);font-size:.94rem;margin-bottom:14px}
+.card .tags{display:flex;gap:6px;flex-wrap:wrap}
+.card .tags span{font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:7px;background:var(--bg-2);color:var(--muted);border:1px solid var(--line)}
+.card .go{font-family:var(--mono);font-size:12.5px;color:var(--accent);display:inline-flex;align-items:center;gap:8px;margin-top:auto}
 .card .go .arw{transition:transform .3s var(--ease)}
 .card:hover .go .arw{transform:translate(4px,-4px)}
-.card .thumb{flex:1 1 200px;max-width:100%;border-radius:14px;min-height:200px;position:relative;overflow:hidden;border:1px solid var(--line);
+.card.feat{grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:10px 28px;align-items:stretch}
+.card.feat h3{font-size:1.7rem;margin:8px 0 12px}
+.card.feat .tags{margin:0 0 14px}
+.card .thumb{border-radius:12px;min-height:170px;position:relative;overflow:hidden;border:1px solid var(--line);
   background:radial-gradient(120% 120% at 20% 10%,rgba(var(--accent-rgb),.3),transparent 55%),linear-gradient(135deg,var(--panel),var(--bg-2))}
 .card .thumb::before{content:"";position:absolute;inset:0;
   background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
   background-size:26px 26px;mask-image:radial-gradient(70% 70% at 30% 20%,#000,transparent)}
 .card .thumb .tag{position:absolute;bottom:14px;left:14px;font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.14em}
-.card .feat-body{flex:2 1 300px;min-width:0;display:flex;flex-direction:column}
 
-/* ---------- Involvement ---------- */
-.inv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:30px}
-.inv-card{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:24px 26px 24px 30px;overflow:hidden;min-width:0;
+/* ---------- Involvement: horizontal rows (role | description) ---------- */
+.inv-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:30px}
+.inv-card{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:22px 26px;overflow:hidden;min-width:0;
+  display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:10px 30px;align-items:start;
   transition:border-color .3s var(--ease),transform .3s var(--ease),box-shadow .3s var(--ease)}
-.inv-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s var(--ease)}
-.inv-card:hover{border-color:rgba(var(--accent-rgb),.5);transform:translateY(-4px);box-shadow:0 22px 55px -30px rgba(var(--accent-rgb),.5)}
-.inv-card:hover::before{transform:scaleY(1)}
-.inv-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;margin-bottom:12px}
+.inv-card:hover{border-color:rgba(var(--accent-rgb),.5);transform:translateY(-3px);box-shadow:0 22px 55px -30px rgba(var(--accent-rgb),.5)}
+.inv-side{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
 .inv-card .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);padding:4px 10px;border:1px solid rgba(var(--accent-rgb),.35);border-radius:100px}
 .inv-card .inv-date{font-family:var(--mono);font-size:12px;color:var(--faint)}
-.inv-card h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 3px;letter-spacing:-.01em}
-.inv-card .inv-org{color:var(--muted);font-size:.93rem;margin-bottom:10px}
+.inv-card h3{font-family:var(--display);font-weight:700;font-size:1.25rem;margin:6px 0 0;letter-spacing:-.01em;line-height:1.2}
+.inv-card .inv-org{color:var(--muted);font-size:.9rem}
 .inv-card .inv-org b{color:var(--text)}
+.inv-main{min-width:0}
 .inv-card p{color:var(--muted);font-size:.94rem;margin-bottom:14px}
 .inv-tags{display:flex;gap:7px;flex-wrap:wrap}
-.inv-tags span{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:7px;background:var(--bg-2);color:var(--muted);border:1px solid var(--line)}
+.inv-tags span{font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:7px;background:var(--bg-2);color:var(--muted);border:1px solid var(--line)}
 
 /* ---------- Contact ---------- */
 .contact{text-align:center}
@@ -274,59 +310,37 @@ h2.title em{font-style:normal;color:var(--accent)}
 .socials a:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-3px)}
 .email-line{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:16px;user-select:all}
 
-/* ============================================================================
-   RESPONSIVE
-   ============================================================================ */
-@media (max-width:900px){
-  html,body{height:auto}
-  body{overflow:auto}
-  .app{height:auto;display:flex;flex-direction:column;gap:16px}
-  .side{overflow:visible}
-  .stage{overflow:visible}
-  .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;border-radius:20px 20px 0 0}
-  .views{overflow:visible;padding:26px 20px 34px}
-  .tab{padding:16px 18px}
-}
-@media (max-width:560px){
-  .side{padding:26px 20px 20px}
-  .form .row{grid-template-columns:1fr}
-}
-@media (prefers-reduced-motion:reduce){
-  *{animation:none!important;scroll-behavior:auto}
-  h1 .line>span{transform:none}
-}
+/* ---------- Terminal tab ---------- */
+.term-view{display:flex;flex-direction:column;min-height:100%}
+.flagrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 14px;font-family:var(--mono);font-size:12px}
+.flag-slot{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);color:var(--faint);transition:all .3s var(--ease)}
+.flag-slot::before{content:"";width:8px;height:8px;border-radius:50%;border:1px solid var(--faint)}
+.flag-slot.got{color:var(--lime);border-color:rgba(180,255,57,.5);background:rgba(180,255,57,.06)}
+.flag-slot.got::before{background:var(--lime);border-color:var(--lime)}
+.flag-count{margin-left:auto;color:var(--faint);letter-spacing:.1em}
 
-/* ============================================================================
-   HIDDEN TERMINAL / CTF
-   Hidden until the visitor presses ` / ~ anywhere or clicks the footer hook.
-   100% client-side; the "login" talks to a FAKE in-memory database.
-   ============================================================================ */
-.term{
-  position:fixed;left:0;right:0;bottom:0;z-index:200;height:min(62vh,560px);
-  background:rgba(6,8,10,.97);backdrop-filter:blur(10px);
-  border-top:1px solid rgba(180,255,57,.35);box-shadow:0 -30px 80px -20px rgba(0,0,0,.85);
-  display:flex;flex-direction:column;transform:translateY(100%);visibility:hidden;
-  transition:transform .4s var(--ease),visibility 0s .4s;font-family:var(--mono);
-  padding-bottom:env(safe-area-inset-bottom,0px)}
-.term.open{transform:translateY(0);visibility:visible;transition:transform .4s var(--ease),visibility 0s}
-.term-bar{display:flex;align-items:center;gap:10px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid rgba(255,255,255,.08);color:var(--faint);font-size:12px}
+.term{flex:1;min-height:300px;display:flex;flex-direction:column;overflow:hidden;
+  background:#06080a;border:1px solid rgba(180,255,57,.3);border-radius:14px;font-family:var(--mono);
+  box-shadow:0 30px 80px -40px rgba(180,255,57,.35)}
+.term-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08);color:var(--faint);font-size:12px}
 .term-bar .dots{display:flex;gap:7px}
 .term-bar .dots i{width:11px;height:11px;border-radius:50%;display:block}
 .term-bar .dots i:nth-child(1){background:#ff5f57}
 .term-bar .dots i:nth-child(2){background:#febc2e}
 .term-bar .dots i:nth-child(3){background:#28c840}
-.term-bar .ttl{color:var(--muted)}
+.term-bar .ttl{color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .term-bar .x{margin-left:auto;cursor:pointer;color:var(--faint);background:none;border:none;font-family:var(--mono)}
 .term-bar .x:hover{color:var(--text)}
-.term-body{flex:1;overflow-y:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));font-size:13.5px;line-height:1.7;color:#c7d6bd}
+.term-body{flex:1;min-height:0;overflow-y:auto;padding:16px;font-size:13.5px;line-height:1.7;color:#c7d6bd}
 .term-body .ln{white-space:pre-wrap;word-break:break-word}
 .term-body a{color:var(--cyan)}
 .term-body .g{color:var(--lime)} .term-body .c{color:var(--cyan)} .term-body .p{color:var(--pink)}
 .term-body .v{color:var(--violet)} .term-body .a{color:var(--amber)} .term-body .dim{color:var(--faint)}
-.term-in{display:flex;align-items:center;gap:8px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));border-top:1px solid rgba(255,255,255,.08)}
+.term-in{display:flex;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.08)}
 .term-in .prompt{color:var(--lime);font-size:13.5px;white-space:nowrap}
 .term-in input{flex:1;min-width:0;background:none;border:none;outline:none;color:#eaffea;font-family:var(--mono);font-size:13.5px}
 
+/* ---------- login + secret modals (CTF) ---------- */
 .cyber-modal{position:fixed;inset:0;z-index:210;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(4,5,8,.74);backdrop-filter:blur(6px)}
 .cyber-modal.open{display:flex}
 .cyber-box{width:min(460px,100%);max-height:88vh;overflow-y:auto;background:var(--panel);border:1px solid rgba(180,255,57,.3);border-radius:16px;padding:30px;font-family:var(--mono);position:relative;box-shadow:0 30px 90px -30px rgba(180,255,57,.4)}
@@ -346,6 +360,39 @@ h2.title em{font-style:normal;color:var(--accent)}
 .secret ul{list-style:none;margin:12px 0;display:grid;gap:10px}
 .secret li{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-family:var(--body);color:var(--muted);font-size:.95rem}
 .secret li b{color:var(--text);font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;display:block;margin-bottom:3px}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+@container v (max-width:640px){
+  .card,.card.feat,.inv-card{grid-template-columns:minmax(0,1fr)}
+  .card .thumb{min-height:120px}
+  .edu-card{grid-template-columns:minmax(0,1fr)}
+  .edu-gpa{text-align:left}
+  .kv{grid-template-columns:minmax(0,1fr);gap:10px}
+  .stats-strip{grid-template-columns:1fr 1fr}
+  .stat:nth-child(3){border-left:0}
+  .stat:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:900px){
+  html,body{height:auto}
+  body{overflow:auto}
+  .app{height:auto;display:flex;flex-direction:column;gap:16px}
+  .side{overflow:visible;gap:22px}
+  .stage{overflow:visible}
+  .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;border-radius:20px 20px 0 0}
+  .views{overflow:visible;padding:26px 20px 34px}
+  .term-view{min-height:0}
+  .term{flex:none;height:420px}
+}
+@media (max-width:560px){
+  .side{padding:26px 20px 20px}
+  .form .row{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;scroll-behavior:auto}
+  h1 .line>span{transform:none}
+}
 </style>
 </head>
 <body>
@@ -366,11 +413,11 @@ h2.title em{font-style:normal;color:var(--accent)}
 <div class="app">
 
   <!-- ======================================================================
-       LEFT PANEL: ABOUT ME (always visible)
+       LEFT PANEL: PROFILE CARD (always visible)
        ====================================================================== -->
-  <aside class="side" aria-label="About Mason Moore">
+  <aside class="side" aria-label="Mason Moore">
 
-    <div class="hero-top">
+    <div>
       <div class="status"><span class="dot"></span> Available for 2027 new-grad roles</div>
 
       <h1>
@@ -381,58 +428,22 @@ h2.title em{font-style:normal;color:var(--accent)}
       <div class="role"><span class="prefix">$&nbsp;</span><span class="rot" id="rot">Machine Learning Engineer</span></div>
 
       <p class="blurb">I build and break intelligent systems — placeholder tagline where you say, in one line, what you make and why it matters. Swap this for your own voice.</p>
-
-      <div class="cta-row">
-        <button type="button" class="btn btn-primary" data-tab="projects">View the work <span>→</span></button>
-        <button type="button" class="btn btn-ghost" data-tab="contact">Get in touch</button>
-      </div>
-
-      <div class="hero-meta">
-        <span><b>Based in</b> New Haven, CT</span>
-        <span><b>Focus</b> ML · Security · Systems</span>
-        <span><b>Open to</b> Full-time / Contract / Internship</span>
-      </div>
     </div>
 
-    <div class="about-block">
-      <div class="eyebrow">01 — About</div>
-      <h2 class="title">Engineer by craft,<br><em>builder by instinct.</em></h2>
+    <dl class="meta">
+      <div><dt>Based in</dt><dd>New Haven, CT</dd></div>
+      <div><dt>Focus</dt><dd>ML · Security · Systems</dd></div>
+      <div><dt>Open to</dt><dd>Full-time / Contract / Internship</dd></div>
+    </dl>
 
-      <div class="about-copy">
-        <p>This is your <b>about section</b> — a placeholder paragraph you'll replace with the story of who you are. Two or three tight paragraphs work best. Lead with what you do and the kind of problems you love.</p>
-        <p>Talk about how you got here, what you're obsessed with right now, and the through-line that connects your work. Keep it human — this is the part people actually read, so let some personality leak in.</p>
-        <p>Close with where you're headed and what you're looking for. Then sign off.</p>
-        <p class="sig">— Mason Moore</p>
-      </div>
-
-      <h3 class="mini">Toolbox</h3>
-      <div class="stack">
-        <span class="chip">Python</span><span class="chip">PyTorch</span>
-        <span class="chip">TensorFlow</span><span class="chip">FastAPI</span>
-        <span class="chip">Docker</span><span class="chip">React</span>
-        <span class="chip">C / C++</span><span class="chip">SQL</span>
-        <span class="chip">AWS</span><span class="chip">Git</span>
-      </div>
-
-      <h3 class="mini">Currently</h3>
-      <div class="stack">
-        <span class="chip">Building things</span>
-        <span class="chip">Learning things</span>
-        <span class="chip">Shipping things</span>
-      </div>
-
-      <!-- Stat counters: the FINAL number goes in data-count and in the text. -->
-      <div class="stats">
-        <div class="stat"><div class="num" data-count="12">12</div><div class="lbl">Projects shipped</div></div>
-        <div class="stat"><div class="num" data-count="4">4</div><div class="lbl">Years building</div></div>
-        <div class="stat"><div class="num" data-count="8">8</div><div class="lbl">Tools mastered</div></div>
-        <div class="stat"><div class="num" data-count="3">3</div><div class="lbl">Roles held</div></div>
-      </div>
+    <div class="cta-row">
+      <button type="button" class="btn btn-primary" data-tab="projects">View the work <span>→</span></button>
+      <button type="button" class="btn btn-ghost" data-tab="contact">Get in touch</button>
     </div>
 
     <footer class="side-foot">
       <p>© <span id="year"></span> Mason Moore — built with intent.</p>
-      <!-- The one visible hook so the CTF is discoverable. Opens the terminal. -->
+      <!-- The visible hook for the CTF. Opens the Terminal tab. -->
       <button type="button" class="term-hook" id="termHook">visitor@portfolio:~$ <span class="blink">▊</span></button>
       <button type="button" class="top" id="toTop">Back to top ↑</button>
     </footer>
@@ -444,16 +455,88 @@ h2.title em{font-style:normal;color:var(--accent)}
   <main class="stage">
 
     <div class="tabs" role="tablist" aria-label="Portfolio sections">
+      <button type="button" class="tab" role="tab" id="tab-about" aria-controls="about" data-view="about" data-accent="pink"><span class="node"></span>About</button>
       <button type="button" class="tab" role="tab" id="tab-experience" aria-controls="experience" data-view="experience" data-accent="violet"><span class="node"></span>Experience</button>
       <button type="button" class="tab" role="tab" id="tab-projects" aria-controls="projects" data-view="projects" data-accent="cyan"><span class="node"></span>Projects</button>
       <button type="button" class="tab" role="tab" id="tab-involvement" aria-controls="involvement" data-view="involvement" data-accent="amber"><span class="node"></span>Involvement</button>
       <button type="button" class="tab" role="tab" id="tab-contact" aria-controls="contact" data-view="contact" data-accent="lime"><span class="node"></span>Contact</button>
+      <button type="button" class="tab" role="tab" id="tab-terminal" aria-controls="terminal" data-view="terminal" data-accent="lime"><span class="node"></span>Terminal</button>
     </div>
 
     <div class="views" id="views">
 
+      <!-- ================= ABOUT ================= -->
+      <section class="view" id="about" role="tabpanel" aria-labelledby="tab-about">
+        <div class="eyebrow">01 — About</div>
+        <h2 class="title">Engineer by craft,<br><em>builder by instinct.</em></h2>
+
+        <div class="about-copy">
+          <p>This is your <b>about section</b> — a placeholder paragraph you'll replace with the story of who you are. Two or three tight paragraphs work best. Lead with what you do and the kind of problems you love.</p>
+          <p>Talk about how you got here, what you're obsessed with right now, and the through-line that connects your work. Keep it human — this is the part people actually read, so let some personality leak in.</p>
+          <p>Close with where you're headed and what you're looking for. Then sign off.</p>
+          <p class="sig">— Mason Moore</p>
+        </div>
+
+        <h3 class="sec">Education</h3>
+        <div class="edu-list stag">
+          <div class="edu-card">
+            <div class="edu-when">Expected<br>May 2027</div>
+            <div class="edu-main">
+              <h4>M.S. Computing</h4>
+              <div class="edu-org"><b>University of Connecticut</b> · Storrs, CT</div>
+              <p>Specializing in Machine Learning Engineering, with Cybersecurity as a strong secondary focus.</p>
+            </div>
+            <div class="edu-gpa"><b>3.8</b>GPA</div>
+          </div>
+          <div class="edu-card">
+            <div class="edu-when">May 2026</div>
+            <div class="edu-main">
+              <h4>B.S.E. Computer Science &amp; Engineering</h4>
+              <div class="edu-org"><b>University of Connecticut</b> · Storrs, CT</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="sec">Honors &amp; credentials</h3>
+        <div class="cred-row stag">
+          <div class="cred"><span class="kicker">Fellowship</span><b>Sarah Levitan Fellowship</b></div>
+          <div class="cred"><span class="kicker">Recognition</span><b>New England Scholar</b></div>
+          <div class="cred todo"><span class="kicker">Certifications</span><b>Placeholder — add any certifications here</b></div>
+        </div>
+
+        <h3 class="sec">Skills</h3>
+        <div class="kv-list">
+          <div class="kv">
+            <h3>Toolbox</h3>
+            <div class="stack">
+              <span class="chip">Python</span><span class="chip">PyTorch</span>
+              <span class="chip">TensorFlow</span><span class="chip">FastAPI</span>
+              <span class="chip">Docker</span><span class="chip">React</span>
+              <span class="chip">C / C++</span><span class="chip">SQL</span>
+              <span class="chip">AWS</span><span class="chip">Git</span>
+            </div>
+          </div>
+          <div class="kv">
+            <h3>Currently</h3>
+            <div class="stack">
+              <span class="chip">Building things</span>
+              <span class="chip">Learning things</span>
+              <span class="chip">Shipping things</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stat counters: the FINAL number goes in data-count and in the text. -->
+        <div class="stats-strip" style="margin-top:14px">
+          <div class="stat"><div class="num" data-count="12">12</div><div class="lbl">Projects shipped</div></div>
+          <div class="stat"><div class="num" data-count="4">4</div><div class="lbl">Years building</div></div>
+          <div class="stat"><div class="num" data-count="8">8</div><div class="lbl">Tools mastered</div></div>
+          <div class="stat"><div class="num" data-count="3">3</div><div class="lbl">Roles held</div></div>
+        </div>
+      </section>
+
       <!-- ================= EXPERIENCE ================= -->
-      <section class="view" id="experience" role="tabpanel" aria-labelledby="tab-experience">
+      <section class="view" id="experience" role="tabpanel" aria-labelledby="tab-experience" hidden>
         <div class="eyebrow">02 — Experience</div>
         <h2 class="title">Where I've <em>shipped.</em></h2>
         <p class="lead">I have worked at several different institutions in many different fields. I have a focus in Machine Learning and Cybersecurity. My tech stack includes python and C/C++. I have used many different security frameworks in my work. Here you can see a timeline of the stuff I have done.</p>
@@ -508,64 +591,88 @@ h2.title em{font-style:normal;color:var(--accent)}
             <div class="feat-body">
               <div class="idx">// FEATURED PROJECT</div>
               <h3>Malware Classifier</h3>
-              <p>Built a machine learning pipeline for static malware detection, combining Random Forest, LightGBM, and MLP models in a soft-voting ensemble trained on the EMBER dataset (282 engineered features, SMOTE-balanced classes). Achieved 80.3% accuracy and 0.97 macro AUC, then productionized the system with FastAPI and Docker for real-time inference. Currently extending the project with adversarial robustness testing (FGSM/PGD attacks via IBM's ART library), framed against the MITRE ATLAS adversarial ML threat matrix.</p>
               <div class="tags"><span>Python</span><span>PyTorch</span><span>FastAPI</span><span>Machine Learning</span><span>Cybersecurity</span></div>
+              <p>Built a machine learning pipeline for static malware detection, combining Random Forest, LightGBM, and MLP models in a soft-voting ensemble trained on the EMBER dataset (282 engineered features, SMOTE-balanced classes). Achieved 80.3% accuracy and 0.97 macro AUC, then productionized the system with FastAPI and Docker for real-time inference. Currently extending the project with adversarial robustness testing (FGSM/PGD attacks via IBM's ART library), framed against the MITRE ATLAS adversarial ML threat matrix.</p>
               <span class="go">View case study <span class="arw">↗</span></span>
             </div>
           </a>
 
           <!-- Frontier LVLM research project -->
           <a href="#" class="card" data-tilt>
-            <div class="idx">// 01</div>
-            <h3>Frontier LVLM Hallucination Research Benchmark</h3>
-            <p>Designed and ran a benchmark evaluating hallucination and prompt-injection vulnerabilities in frontier large vision-language models, testing attack surfaces across GPT-o3, Claude Opus, and Gemini. Built a systematic evaluation framework to probe how these models fail under adversarial visual and textual inputs, surfacing security-relevant failure modes at the intersection of multimodal AI and adversarial robustness — research directly aimed at the emerging challenge of securing frontier vision-language systems against manipulation.</p>
-            <div class="tags"><span>Shell</span><span>Python</span><span>Prompt Injection</span><span>Prompt Engineering</span><span>Security Research</span></div>
-            <span class="go">View project <span class="arw">↗</span></span>
+            <div class="c-side">
+              <div class="idx">// 01</div>
+              <h3>Frontier LVLM Hallucination Research Benchmark</h3>
+              <div class="tags"><span>Shell</span><span>Python</span><span>Prompt Injection</span><span>Prompt Engineering</span><span>Security Research</span></div>
+            </div>
+            <div class="c-main">
+              <p>Designed and ran a benchmark evaluating hallucination and prompt-injection vulnerabilities in frontier large vision-language models, testing attack surfaces across GPT-o3, Claude Opus, and Gemini. Built a systematic evaluation framework to probe how these models fail under adversarial visual and textual inputs, surfacing security-relevant failure modes at the intersection of multimodal AI and adversarial robustness — research directly aimed at the emerging challenge of securing frontier vision-language systems against manipulation.</p>
+              <span class="go">View project <span class="arw">↗</span></span>
+            </div>
           </a>
 
           <!-- Job tracker and scraper -->
           <a href="#" class="card" data-tilt>
-            <div class="idx">// 02</div>
-            <h3>Automated Job Posting Scraper & Tracker</h3>
-            <p>Designed a web scraper that automatically monitors LinkedIn, Indeed, and Handshake for new postings matching target criteria, parsing and structuring listings in real time. Built with BeautifulSoup, the tool eliminates manual searching by surfacing relevant opportunities the moment they're posted. Built a lightweight application to centralize and manage the job application pipeline end-to-end — tracking status, deadlines, and follow-ups across every stage from application to offer. Designed with simple scripting languages to bring structure and visibility to a process that's normally scattered across spreadsheets and email threads.</p>
-            <div class="tags"><span>Python</span><span>Beautifulsoup</span><span>Live Updates</span><span>Discord Hook</span></div>
-            <span class="go">View project <span class="arw">↗</span></span>
+            <div class="c-side">
+              <div class="idx">// 02</div>
+              <h3>Automated Job Posting Scraper & Tracker</h3>
+              <div class="tags"><span>Python</span><span>Beautifulsoup</span><span>Live Updates</span><span>Discord Hook</span></div>
+            </div>
+            <div class="c-main">
+              <p>Designed a web scraper that automatically monitors LinkedIn, Indeed, and Handshake for new postings matching target criteria, parsing and structuring listings in real time. Built with BeautifulSoup, the tool eliminates manual searching by surfacing relevant opportunities the moment they're posted. Built a lightweight application to centralize and manage the job application pipeline end-to-end — tracking status, deadlines, and follow-ups across every stage from application to offer. Designed with simple scripting languages to bring structure and visibility to a process that's normally scattered across spreadsheets and email threads.</p>
+              <span class="go">View project <span class="arw">↗</span></span>
+            </div>
           </a>
 
           <!-- Wordle bot -->
           <a href="#" class="card" data-tilt>
-            <div class="idx">// 03</div>
-            <h3>Optimal Wordle Solver</h3>
-            <p>Developed an information-theoretic Wordle solver that selects each guess by maximizing expected information gain (entropy) across the remaining word space, narrowing down the solution in a minimal number of guesses. Implemented in python, the solver models the game as a search-and-reduction problem, benchmarked against optimal-strategy solutions to validate performance. Validated against 100k simulations with a 99.905% accuracy.</p>
-            <div class="tags"><span>Python</span><span>Algorithmic Design</span></div>
-            <span class="go">View project <span class="arw">↗</span></span>
+            <div class="c-side">
+              <div class="idx">// 03</div>
+              <h3>Optimal Wordle Solver</h3>
+              <div class="tags"><span>Python</span><span>Algorithmic Design</span></div>
+            </div>
+            <div class="c-main">
+              <p>Developed an information-theoretic Wordle solver that selects each guess by maximizing expected information gain (entropy) across the remaining word space, narrowing down the solution in a minimal number of guesses. Implemented in python, the solver models the game as a search-and-reduction problem, benchmarked against optimal-strategy solutions to validate performance. Validated against 100k simulations with a 99.905% accuracy.</p>
+              <span class="go">View project <span class="arw">↗</span></span>
+            </div>
           </a>
 
           <!-- Rubik's solver -->
           <a href="#" class="card" data-tilt>
-            <div class="idx">// 04</div>
-            <h3>Optimal Rubiks Cube Solver</h3>
-            <p>Built a Rubik's Cube solving engine that computes near-optimal move sequences using Kociemba's two-phase algorithm, balancing solve speed against move-count optimality. The solver models cube states computationally and searches the permutation space efficiently to consistently produce short, valid solutions. Uses OpenCV to pull cube faces from images and solves given cube state.</p>
-            <div class="tags"><span>Python</span><span>Computer Vision</span><span>OpenCV</span></div>
-            <span class="go">View project <span class="arw">↗</span></span>
+            <div class="c-side">
+              <div class="idx">// 04</div>
+              <h3>Optimal Rubiks Cube Solver</h3>
+              <div class="tags"><span>Python</span><span>Computer Vision</span><span>OpenCV</span></div>
+            </div>
+            <div class="c-main">
+              <p>Built a Rubik's Cube solving engine that computes near-optimal move sequences using Kociemba's two-phase algorithm, balancing solve speed against move-count optimality. The solver models cube states computationally and searches the permutation space efficiently to consistently produce short, valid solutions. Uses OpenCV to pull cube faces from images and solves given cube state.</p>
+              <span class="go">View project <span class="arw">↗</span></span>
+            </div>
           </a>
 
           <!-- Password manager and generator -->
           <a href="#" class="card" data-tilt>
-            <div class="idx">// 05</div>
-            <h3>Password Manager & Generator</h3>
-            <p>Engineered a secure password manager featuring encrypted local storage and a cryptographically strong password generator. Implemented AES-256 encryption to protect stored credentials, with a generator that produces high-entropy, 128 bits, passwords configurable by length and character set — built with security-first design principles drawn from hands-on cybersecurity work.</p>
-            <div class="tags"><span>C++</span><span>Cybersecurity</span><span>Secure Storage</span><span>Cryptography</span></div>
-            <span class="go">View project <span class="arw">↗</span></span>
+            <div class="c-side">
+              <div class="idx">// 05</div>
+              <h3>Password Manager & Generator</h3>
+              <div class="tags"><span>C++</span><span>Cybersecurity</span><span>Secure Storage</span><span>Cryptography</span></div>
+            </div>
+            <div class="c-main">
+              <p>Engineered a secure password manager featuring encrypted local storage and a cryptographically strong password generator. Implemented AES-256 encryption to protect stored credentials, with a generator that produces high-entropy, 128 bits, passwords configurable by length and character set — built with security-first design principles drawn from hands-on cybersecurity work.</p>
+              <span class="go">View project <span class="arw">↗</span></span>
+            </div>
           </a>
 
           <!-- Speaker with laser -->
           <a href="#" class="card" data-tilt>
-            <div class="idx">// 06</div>
-            <h3>Speaker with Laser Audio Modulator</h3>
-            <p>Designed and built a free-space optical audio transmission system, modulating a laser's intensity with an audio signal and demodulating it at a photodiode receiver to reproduce sound through a speaker — a hands-on exploration of analog signal modulation and optoelectronics. Combined embedded/analog circuit design with signal processing to convert electrical audio into light and back again.</p>
-            <div class="tags"><span>Circuit Design</span><span>Hardware Implementation</span></div>
-            <span class="go">View project <span class="arw">↗</span></span>
+            <div class="c-side">
+              <div class="idx">// 06</div>
+              <h3>Speaker with Laser Audio Modulator</h3>
+              <div class="tags"><span>Circuit Design</span><span>Hardware Implementation</span></div>
+            </div>
+            <div class="c-main">
+              <p>Designed and built a free-space optical audio transmission system, modulating a laser's intensity with an audio signal and demodulating it at a photodiode receiver to reproduce sound through a speaker — a hands-on exploration of analog signal modulation and optoelectronics. Combined embedded/analog circuit design with signal processing to convert electrical audio into light and back again.</p>
+              <span class="go">View project <span class="arw">↗</span></span>
+            </div>
           </a>
 
         </div>
@@ -580,47 +687,55 @@ h2.title em{font-style:normal;color:var(--accent)}
         <div class="inv-grid stag">
 
           <div class="inv-card">
-            <div class="inv-top">
+            <div class="inv-side">
               <span class="kicker">Leadership</span>
               <span class="inv-date">Jan 2025 — May 2025</span>
+              <h3>VP of Operations</h3>
+              <div class="inv-org"><b>Husky Quantitative</b> · University of Connecticut</div>
             </div>
-            <h3>VP of Operations</h3>
-            <div class="inv-org"><b>Husky Quantitative</b> · University of Connecticut</div>
-            <p>Assisted in the creation and establishment of UConns first ever quantitative fund. Served as Vice President of Operations. Created an interview pipeline that screen 80+ applicants and assisted in interviewing members directly for admission. Performed administrative duties with the University.</p>
-            <div class="inv-tags"><span>Operations</span><span>Leadership</span></div>
+            <div class="inv-main">
+              <p>Assisted in the creation and establishment of UConns first ever quantitative fund. Served as Vice President of Operations. Created an interview pipeline that screen 80+ applicants and assisted in interviewing members directly for admission. Performed administrative duties with the University.</p>
+              <div class="inv-tags"><span>Operations</span><span>Leadership</span></div>
+            </div>
           </div>
 
           <div class="inv-card">
-            <div class="inv-top">
+            <div class="inv-side">
               <span class="kicker">Residential Life</span>
               <span class="inv-date">Feb 2024 — May 2026</span>
+              <h3>Resident Assistant</h3>
+              <div class="inv-org"><b>Office of Residential Living and Education</b> · University of Connecticut</div>
             </div>
-            <h3>Resident Assistant</h3>
-            <div class="inv-org"><b>Office of Residential Living and Education</b> · University of Connecticut</div>
-            <p>Directly responsible for over 100+ residents over 3 academic years. Fostered an inclusive community and created engaging programming to bring residents together. Organized area wide events for 1500+ residents. Organized and planned watch parties for sporting events, regularly receiving 300+ attendance. Voted most dependable RA on a staff of 43, won the North Shining Star Award - Highest Honor on North Staff.</p>
-            <div class="inv-tags"><span>Mentorship</span><span>Community</span></div>
+            <div class="inv-main">
+              <p>Directly responsible for over 100+ residents over 3 academic years. Fostered an inclusive community and created engaging programming to bring residents together. Organized area wide events for 1500+ residents. Organized and planned watch parties for sporting events, regularly receiving 300+ attendance. Voted most dependable RA on a staff of 43, won the North Shining Star Award - Highest Honor on North Staff.</p>
+              <div class="inv-tags"><span>Mentorship</span><span>Community</span></div>
+            </div>
           </div>
 
           <div class="inv-card">
-            <div class="inv-top">
+            <div class="inv-side">
               <span class="kicker">Entrepreneurship</span>
               <span class="inv-date">2026 — Present</span>
+              <h3>Freelance Web Developer</h3>
+              <div class="inv-org"><b>Self Employed</b> · Remote</div>
             </div>
-            <h3>Freelance Web Developer</h3>
-            <div class="inv-org"><b>Self Employed</b> · Remote</div>
-            <p>Creating personalized websites tailored to clients exact specifications. Personal portfolios and small businesses alike.</p>
-            <div class="inv-tags"><span>Web Development</span><span>Design</span></div>
+            <div class="inv-main">
+              <p>Creating personalized websites tailored to clients exact specifications. Personal portfolios and small businesses alike.</p>
+              <div class="inv-tags"><span>Web Development</span><span>Design</span></div>
+            </div>
           </div>
 
           <div class="inv-card">
-            <div class="inv-top">
+            <div class="inv-side">
               <span class="kicker">Education</span>
               <span class="inv-date">2022 — Present</span>
+              <h3>Tutor</h3>
+              <div class="inv-org"><b>Self Employed</b> · Client Specific</div>
             </div>
-            <h3>Tutor</h3>
-            <div class="inv-org"><b>Self Employed</b> · Client Specific</div>
-            <p>Tutored students in a wide range of topics such as computer science, mathematics, physics, biology, and spanish. Led to comprehensive understanding and passing grades.</p>
-            <div class="inv-tags"><span>Mentorship</span><span>Academics</span></div>
+            <div class="inv-main">
+              <p>Tutored students in a wide range of topics such as computer science, mathematics, physics, biology, and spanish. Led to comprehensive understanding and passing grades.</p>
+              <div class="inv-tags"><span>Mentorship</span><span>Academics</span></div>
+            </div>
           </div>
 
         </div>
@@ -652,26 +767,40 @@ h2.title em{font-style:normal;color:var(--accent)}
         <p class="email-line">masonmmoore1@gmail.com</p>
       </section>
 
+      <!-- ================= TERMINAL (the CTF) ================= -->
+      <section class="view term-view" id="terminal" role="tabpanel" aria-labelledby="tab-terminal" hidden>
+        <div class="eyebrow">06 — Terminal</div>
+        <h2 class="title">Capture the <em>flags.</em></h2>
+        <p class="lead">A sandboxed shell hidden inside this portfolio. Three flags are in here. Type <b>help</b> to start. Nothing in it touches a real server.</p>
+
+        <div class="flagrow">
+          <span class="flag-slot" data-slot="recon">recon</span>
+          <span class="flag-slot" data-slot="sqli">access</span>
+          <span class="flag-slot" data-slot="crypto">crypto</span>
+          <span class="flag-count" id="flagCount">0/3</span>
+        </div>
+
+        <div class="term" id="term">
+          <div class="term-bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="ttl">visitor@portfolio — /home/visitor — zsh</span>
+            <button type="button" class="x" id="termClose" title="leave terminal (Esc)">✕</button>
+          </div>
+          <div class="term-body" id="termBody"></div>
+          <div class="term-in">
+            <label class="prompt" for="termInput">visitor@portfolio:~$</label>
+            <input id="termInput" autocomplete="off" autocapitalize="off" spellcheck="false">
+          </div>
+        </div>
+      </section>
+
     </div>
   </main>
 </div>
 
 <!-- ==========================================================================
-     HIDDEN CTF ELEMENTS (terminal + login portal + secret panel)
+     HIDDEN CTF ELEMENTS (login portal + secret panel; overlays)
      ========================================================================== -->
-<div class="term" id="term" aria-hidden="true">
-  <div class="term-bar">
-    <span class="dots"><i></i><i></i><i></i></span>
-    <span class="ttl">visitor@portfolio — /home/visitor — zsh</span>
-    <button class="x" id="termClose" title="close (Esc)">✕</button>
-  </div>
-  <div class="term-body" id="termBody"></div>
-  <div class="term-in">
-    <span class="prompt">visitor@portfolio:~$</span>
-    <input id="termInput" autocomplete="off" autocapitalize="off" spellcheck="false">
-  </div>
-</div>
-
 <div class="cyber-modal" id="loginModal">
   <div class="cyber-box">
     <button class="close" id="loginClose">✕</button>
@@ -738,9 +867,11 @@ h2.title em{font-style:normal;color:var(--accent)}
   const tabs=[...document.querySelectorAll('.tab')];
   const views=[...document.querySelectorAll('.view')];
   const viewsBox=document.getElementById('views');
+  let current=null, previous=null;
   function show(id, focusTab){
     const t = tabs.find(x=>x.dataset.view===id) || tabs[0];
     id = t.dataset.view;
+    if(current!==id){ previous=current; current=id; }
     tabs.forEach(x=>{
       const on = x===t;
       x.classList.toggle('active', on);
@@ -750,8 +881,13 @@ h2.title em{font-style:normal;color:var(--accent)}
     views.forEach(v=>{ v.hidden = v.id!==id; });
     setAccent(t.dataset.accent);
     viewsBox.scrollTop = 0;
+    const bar=t.parentElement;   // keep the active tab in view on narrow screens (scrolls the tab bar only)
+    if(bar.scrollWidth>bar.clientWidth) bar.scrollLeft=t.offsetLeft-(bar.clientWidth-t.offsetWidth)/2;
     if(focusTab) t.focus();
+    document.dispatchEvent(new CustomEvent('tab-shown',{detail:id}));
   }
+  const isMobile=()=>matchMedia('(max-width:900px)').matches;
+  function toStage(){ if(isMobile()) document.querySelector('.stage').scrollIntoView({behavior:reduce?'auto':'smooth'}); }
   tabs.forEach((t,i)=>{
     t.addEventListener('click',()=>show(t.dataset.view));
     t.addEventListener('keydown',e=>{
@@ -763,14 +899,17 @@ h2.title em{font-style:normal;color:var(--accent)}
     });
   });
   // buttons elsewhere that jump to a tab
-  document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
-    show(b.dataset.tab);
-    if(matchMedia('(max-width:900px)').matches) document.querySelector('.stage').scrollIntoView({behavior:reduce?'auto':'smooth'});
-  }));
+  document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{ show(b.dataset.tab); toStage(); }));
+  // the terminal script asks for tabs through this event ("back" = previous tab)
+  document.addEventListener('goto-tab',e=>{
+    const d=e.detail;
+    show(d==='back' ? ((previous && previous!=='terminal') ? previous : 'about') : d);
+    toStage();
+  });
   // stagger the entrance of each tab's items
   document.querySelectorAll('.stag').forEach(g=>[...g.children].forEach((c,i)=>c.style.setProperty('--i',Math.min(i,8))));
-  // open the tab named in the URL (#projects etc.), else Experience
-  let startTab='experience';
+  // open the tab named in the URL (#projects etc.), else About
+  let startTab='about';
   try{ const h=location.hash.slice(1); if(tabs.some(t=>t.dataset.view===h)) startTab=h; }catch(e){}
   show(startTab);
 
@@ -784,7 +923,7 @@ h2.title em{font-style:normal;color:var(--accent)}
     });
   }
 
-  /* ---------- hero role typewriter. EDIT THIS ARRAY to change the titles ---------- */
+  /* ---------- role typewriter. EDIT THIS ARRAY to change the titles ---------- */
   const roles=['Machine Learning Engineer','Security Researcher','Full-Stack Builder','Systems Thinker','Problem Solver'];
   const rot=document.getElementById('rot');
   if(!reduce){
@@ -805,7 +944,7 @@ h2.title em{font-style:normal;color:var(--accent)}
       card.addEventListener('mousemove',e=>{
         const r=card.getBoundingClientRect();
         const px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
-        card.style.transform=`perspective(900px) rotateY(${(px-.5)*7}deg) rotateX(${(.5-py)*7}deg) translateY(-4px)`;
+        card.style.transform=`perspective(1400px) rotateY(${(px-.5)*3}deg) rotateX(${(.5-py)*4}deg) translateY(-3px)`;
         card.style.setProperty('--mx',(px*100)+'%');
         card.style.setProperty('--my',(py*100)+'%');
       });
@@ -836,14 +975,14 @@ h2.title em{font-style:normal;color:var(--accent)}
 
 <!-- ==========================================================================
      CTF ENGINE (kept separate on purpose)
-     Chain: 0 breadcrumbs (source comment + console banner) → 1 terminal (ls -a,
-     cat, .env leaks the XOR key) → 2 SQLi login (FAKE in-memory DB) →
+     Chain: 0 breadcrumbs (source comment + console banner) → 1 terminal tab
+     (ls -a, cat, .env leaks the XOR key) → 2 SQLi login (FAKE in-memory DB) →
      3 cipher (decrypt <key>) → 4 payoff panel. 3 flags total. All client-side.
      ========================================================================== -->
 <script>
 (function(){
   const $  = s => document.querySelector(s);
-  const term=$('#term'), body=$('#termBody'), input=$('#termInput'), hook=$('#termHook');
+  const view=$('#terminal'), body=$('#termBody'), input=$('#termInput'), hook=$('#termHook');
   const b64decode = s => { try { return decodeURIComponent(escape(atob(s))); } catch(e){ return '(invalid base64)'; } };
   const esc = s => s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
@@ -871,25 +1010,33 @@ h2.title em{font-style:normal;color:var(--accent)}
       "DB_HOST=127.0.0.1\n"+
       "DB_USER=admin\n"+
       "XOR_KEY=n3ur0n",
-    'projects/': '[dir]  (nice try — the real ones are on the page above)'
+    'projects/': '[dir]  (nice try — the real ones are in the Projects tab)'
   };
 
   function print(html){ const d=document.createElement('div'); d.className='ln'; d.innerHTML=html; body.appendChild(d); body.scrollTop=body.scrollHeight; }
   function award(name){
     if(state.found.has(name)) return;
     state.found.add(name);
+    const slot=document.querySelector('[data-slot="'+name+'"]'); if(slot) slot.classList.add('got');
+    $('#flagCount').textContent=state.found.size+'/3';
     print('<span class="a">◆ flag captured ['+state.found.size+'/3]:</span> <span class="g">'+FLAGS[name]+'</span>');
   }
 
+  /* ---------- the terminal is a tab now ---------- */
+  const isOpen = () => !view.hidden;
+  const goto = id => document.dispatchEvent(new CustomEvent('goto-tab',{detail:id}));
+  function openTerm(){ goto('terminal'); }
+  function closeTerm(){ goto('back'); }
   let bootDone=false;
-  function openTerm(){
-    term.classList.add('open'); term.setAttribute('aria-hidden','false');
+  function onShown(){
     if(!bootDone){ boot(); bootDone=true; }
     setTimeout(()=>input.focus(),120);
   }
-  function closeTerm(){ term.classList.remove('open'); term.setAttribute('aria-hidden','true'); }
+  document.addEventListener('tab-shown',e=>{ if(e.detail==='terminal') onShown(); });
+  if(isOpen()) onShown();
   hook.addEventListener('click', openTerm);
   $('#termClose').addEventListener('click', closeTerm);
+  view.addEventListener('click',e=>{ if(!window.getSelection().toString() && !e.target.closest('button')) input.focus(); });
 
   function boot(){
     print('<span class="g">┌─ visitor@portfolio</span> <span class="dim">— access terminal v1.3.37</span>');
@@ -1033,7 +1180,7 @@ h2.title em{font-style:normal;color:var(--accent)}
       state.authed=true;
       setTimeout(()=>{
         closeLogin();
-        if(!term.classList.contains('open')) openTerm();
+        if(!isOpen()) openTerm();
         award('sqli');
         print('<span class="a">◆ admin portal breached.</span> a new file appeared: <span class="p">secret.enc</span>');
         print('<span class="dim">read it with `cat secret.enc`, then `decrypt &lt;key&gt;` (the key leaked in `.env`).</span>');
@@ -1071,19 +1218,23 @@ h2.title em{font-style:normal;color:var(--accent)}
     if(c) c.addEventListener('click', e=>{
       e.preventDefault();
       secretModal.classList.remove('open');
-      const t=document.getElementById('tab-contact'); if(t) t.click();
+      goto('contact');
     });
   }
 
   /* ---------- global keys ---------- */
   document.addEventListener('keydown', e=>{
-    // ` / ~ toggles the terminal, but never while typing in a real form field
-    const typing = e.target.closest && e.target.closest('#contactForm');
+    // ` / ~ jumps to the Terminal tab (and back), but never while typing in a form or the login
+    const typing = e.target.closest && (e.target.closest('#contactForm') || e.target.closest('#loginModal'));
     if((e.key==='`' || e.key==='~') && !typing){
       e.preventDefault();
-      term.classList.contains('open') ? closeTerm() : openTerm();
+      isOpen() ? closeTerm() : openTerm();
     }
-    if(e.key==='Escape'){ closeTerm(); closeLogin(); secretModal.classList.remove('open'); }
+    if(e.key==='Escape'){
+      const modalOpen = loginModal.classList.contains('open') || secretModal.classList.contains('open');
+      closeLogin(); secretModal.classList.remove('open');
+      if(!modalOpen && isOpen()) closeTerm();
+    }
   });
 
   /* ---------- Stage 0: the console breadcrumb ---------- */
