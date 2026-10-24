@@ -120,7 +120,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(180,255,57,.5)}70%{box-shadow:0 0 0 9px rgba(180,255,57,0)}100%{box-shadow:0 0 0 0 rgba(180,255,57,0)}}
 
 /* name size follows the panel width (cqi), so MASON / MOORE always fit */
-h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.92;font-size:clamp(2.4rem,19.5cqi,4.2rem);margin:0 0 4px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.92;font-size:clamp(2.4rem,min(19.5cqi,9.5vh),4.2rem);margin:0 0 4px}
 h1 .line{display:block;overflow:hidden;padding-bottom:.05em}
 h1 .line>span{display:inline-block;transform:translateY(110%);animation:rise .9s var(--ease) forwards}
 h1 .line:nth-child(2)>span{animation-delay:.09s}
@@ -149,8 +149,9 @@ h1 .line:nth-child(2)>span{animation-delay:.09s}
 .btn-ghost{border-color:var(--line-strong);color:var(--text);background:rgba(255,255,255,.02)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 
-.side-foot{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 14px}
-.side-foot p{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.side-foot{border-top:1px solid var(--line);padding-top:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 14px}
+.side-foot p{grid-column:1/-1;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.side-foot .term-hook{justify-self:start}
 .side-foot .top{font-family:var(--mono);font-size:11px;color:var(--muted);background:none;border:0;cursor:pointer}
 .side-foot .top:hover{color:var(--text)}
 .term-hook{font-family:var(--mono);font-size:11.5px;color:var(--faint);background:none;border:none;cursor:pointer;letter-spacing:.04em;transition:color .25s}
@@ -207,16 +208,17 @@ h2.title em{font-style:normal;color:var(--accent)}
 .lang-note b{color:var(--muted);font-weight:500}
 
 /* fun facts */
-.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.fact{display:grid;grid-template-columns:76px minmax(0,1fr);gap:16px;align-items:center;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;transition:border-color .3s var(--ease),transform .3s var(--ease)}
+.fact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fact{display:grid;grid-template-columns:76px minmax(0,1fr);gap:16px;align-items:center;min-height:92px;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;transition:border-color .3s var(--ease),transform .3s var(--ease)}
 .fact:hover{border-color:rgba(var(--accent-rgb),.5);transform:translateY(-3px)}
-.fact .badge{font-family:var(--display);font-weight:800;font-size:1.1rem;line-height:1;color:var(--accent);text-align:center;white-space:nowrap;
-  padding:14px 4px;border:1px solid rgba(var(--accent-rgb),.35);border-radius:10px;background:rgba(var(--accent-rgb),.06)}
-.fact .badge.sm{font-family:var(--mono);font-weight:600;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase}
-.fact .badge.big{font-size:1.6rem}
+/* every badge is the same size box, so all tiles line up */
+.fact .badge{display:flex;align-items:center;justify-content:center;width:76px;height:60px;border:1px solid rgba(var(--accent-rgb),.35);border-radius:10px;background:rgba(var(--accent-rgb),.06);
+  font-family:var(--display);font-weight:800;font-size:1.05rem;line-height:1;color:var(--accent);white-space:nowrap}
+.fact .badge.sm{font-family:var(--mono);font-weight:600;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase}
+.fact .badge.big{font-family:var(--body);font-size:1.9rem;font-weight:400}
 .fact p{color:var(--muted);font-size:.92rem;line-height:1.5}
-.fact.wide{grid-column:1/-1}
-.fact.wide .btn{margin-top:10px;padding:9px 16px;font-size:12px}
+.fact.wide{grid-column:1/-1;grid-template-columns:76px minmax(0,1fr) auto;min-height:0}
+.fact.wide .btn{padding:10px 16px;font-size:12px;white-space:nowrap}
 
 .edu-list{display:grid;gap:12px}
 .edu-card{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:8px 22px;align-items:center;
@@ -396,7 +398,9 @@ h2.title em{font-style:normal;color:var(--accent)}
   .contact-grid{grid-template-columns:minmax(0,1fr)}
 }
 @container v (max-width:640px){
-  .fact.wide{grid-column:auto}
+  .fact-grid{grid-template-columns:minmax(0,1fr)}
+  .fact.wide{grid-template-columns:76px minmax(0,1fr)}
+  .fact.wide .btn{grid-column:1/-1}
   .card,.card.feat,.inv-card{grid-template-columns:minmax(0,1fr)}
   .card .thumb{min-height:120px}
   .edu-card{grid-template-columns:minmax(0,1fr)}
@@ -416,6 +420,18 @@ h2.title em{font-style:normal;color:var(--accent)}
   .views{overflow:visible;padding:26px 20px 34px}
   .term-view{min-height:0}
   .term{flex:none;height:420px}
+}
+/* shorter screens: tighten the left panel so everything still fits without scrolling */
+@media (min-width:901px) and (max-height:780px){
+  .side{padding:22px 24px 14px;gap:14px}
+  .status{margin-bottom:16px;padding:6px 12px}
+  .role{margin:12px 0 0}
+  .meta div{padding:8px 0}
+  .btn{padding:10px 12px}
+}
+@media (min-width:901px) and (max-height:640px){
+  .status{display:none}
+  .meta div{padding:6px 0}
 }
 @media (max-width:560px){
   .side{padding:26px 20px 20px}
@@ -465,7 +481,6 @@ h2.title em{font-style:normal;color:var(--accent)}
       <div><dt>Based in</dt><dd>New Haven, CT</dd></div>
       <div><dt>School</dt><dd>UConn · M.S. Computing '27</dd></div>
       <div><dt>Focus</dt><dd>ML · Security · Systems</dd></div>
-      <div><dt>Languages</dt><dd>English · Spanish · French</dd></div>
       <div><dt>Open to</dt><dd>Full-time / Contract / Internship</dd></div>
     </dl>
 
@@ -548,7 +563,7 @@ h2.title em{font-style:normal;color:var(--accent)}
           <div class="fact"><div class="badge sm">cipher</div><p>I'm designing a cipher so my paper journal reads like a real language.</p></div>
           <div class="fact"><div class="badge sm">worlds</div><p>I build fantasy worlds, with a physics-grounded magic system at the center.</p></div>
           <div class="fact"><div class="badge sm">off duty</div><p>Fishing, cooking, Minecraft, and a Restoration Druid main in WoW.</p></div>
-          <div class="fact wide"><div class="badge sm">&gt;_</div><div><p>This site hides a terminal game with three flags. Think you can find them all?</p><button type="button" class="btn btn-primary" data-tab="terminal">Open the terminal <span>→</span></button></div></div>
+          <div class="fact wide"><div class="badge sm">&gt;_</div><p>This site hides a terminal game with three flags. Think you can find them all?</p><button type="button" class="btn btn-primary" data-tab="terminal">Open the terminal <span>→</span></button></div>
         </div>
 
         <h3 class="sec">Education</h3>
